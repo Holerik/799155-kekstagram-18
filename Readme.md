@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Александр Зобнин](https://up.htmlacademy.ru/javascript/18/user/799155).
-* Наставник: `Личный наставник Илья Барашков`.
+* Наставник: [Илья Барашков](https://up.htmlacademy.ru/javascript/18/user/379063).
 
 ---
 
