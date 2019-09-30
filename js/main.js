@@ -255,11 +255,10 @@ cancelButton.addEventListener('click', function () {
 var getLevelPinPosition = function (evt) {
   var slider = imgUploadPopup.querySelector('.effect-level');
   var rect = slider.getBoundingClientRect();
-  var pos = 100.0 * (evt.clientX - rect.left) / rect.width;
-  if (pos > 100.0) {
-    pos = 100.0;
-  }
-  if (pos < 0) {
+  var pos = MAX_SCALE_VALUE * (evt.clientX - rect.left) / rect.width;
+  if (pos > MAX_SCALE_VALUE) {
+    pos = MAX_SCALE_VALUE;
+  } else if (pos < 0) {
     pos = 0;
   }
   return Math.floor(pos);
