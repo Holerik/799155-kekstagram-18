@@ -248,18 +248,24 @@ uploadFile.addEventListener('change', function () {
 cancelButton.addEventListener('click', function () {
   closeImgPopup();
 });
-
-// обработка событий ползунка управления эффектами
-
+//
+// обработка событий ползунка для управления эффектами
+//
 // получить положение ползунка
 var getLevelPinPosition = function (evt) {
   var slider = imgUploadPopup.querySelector('.effect-level');
   var rect = slider.getBoundingClientRect();
   var pos = 100.0 * (evt.clientX - rect.left) / rect.width;
+  if (pos > 100.0) {
+    pos = 100.0;
+  }
+  if (pos < 0) {
+    pos = 0;
+  }
   return Math.floor(pos);
 };
 
-// установить положение ползунка
+// установить положение ползунка и применить эффект
 var setLevelPinPosition = function (evt) {
   if (evt.which === 1) {
     var levelValue = imgUploadPopup.querySelector('.effect-level__value');
@@ -291,39 +297,28 @@ var setLevelPinPosition = function (evt) {
   }
 };
 
-effectLevelPin.addEventListener('mouseup', function (evt) {
-  setLevelPinPosition(evt);
-});
-
-// обработка изменения масштаба
-var scaleHandler = function (evt) {
-  var valueElem = imgUploadPopup.querySelector('.scale__control--value');
-  var scale = parseInt(valueElem.value.slice(0, valueElem.value.length - 1), 10);
-  if (evt.target === smallerScaleButton) {
-    scale -= SCALE_STEP;
-    if (scale < SCALE_STEP) {
-      scale = SCALE_STEP;
-    }
-  } else if (evt.target === biggerScaleButton) {
-    scale += SCALE_STEP;
-    if (scale > MAX_SCALE_VALUE) {
-      scale = MAX_SCALE_VALUE;
-    }
-  }
-  valueElem.value = scale.toString() + '%';
-  var fScale = scale / 100.0;
-  imgUploadPopup.querySelector('.img-upload__preview').style.transform = 'scale(' + fScale.toString() + ')';
+var onMouseUp = function (evt) {
+  evt.preventDefault();
+  document.removeEventListener('mousemove', onMouseMove);
+  effectLevelPin.removeEventListener('mouseup', onMouseUp);
 };
 
-smallerScaleButton.addEventListener('click', function (evt) {
-  scaleHandler(evt);
+effectLevelPin.addEventListener('mouseup', onMouseUp);
+
+effectLevelPin.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
 });
 
-biggerScaleButton.addEventListener('click', function (evt) {
-  scaleHandler(evt);
-});
+var onMouseMove = function (evt) {
+  evt.preventDefault();
+  setLevelPinPosition(evt);
+};
 
+document.addEventListener('mousemove', onMouseMove);
+
+//
 // определение выбранного эффекта
+//
 var getEffect = function (evt) {
   if (evt.target.classList.contains('effects__radio')) {
     return evt.target.value;
@@ -344,6 +339,7 @@ var setEffect = function (evt) {
       break;
     }
   }
+
   var preview = imgUploadPopup.querySelector('.img-upload__preview');
   var slider = imgUploadPopup.querySelector('.effect-level');
   if (!(currentEffect === 'none')) {
@@ -387,6 +383,39 @@ imgUploadPopup.querySelector('.effects__list').addEventListener('click', functio
   setEffect(evt);
 });
 
+//
+// обработка изменения масштаба
+//
+var scaleHandler = function (evt) {
+  var valueElem = imgUploadPopup.querySelector('.scale__control--value');
+  var scale = parseInt(valueElem.value.slice(0, valueElem.value.length - 1), 10);
+  if (evt.target === smallerScaleButton) {
+    scale -= SCALE_STEP;
+    if (scale < SCALE_STEP) {
+      scale = SCALE_STEP;
+    }
+  } else if (evt.target === biggerScaleButton) {
+    scale += SCALE_STEP;
+    if (scale > MAX_SCALE_VALUE) {
+      scale = MAX_SCALE_VALUE;
+    }
+  }
+  valueElem.value = scale.toString() + '%';
+  var fScale = scale / 100.0;
+  imgUploadPopup.querySelector('.img-upload__preview').style.transform = 'scale(' + fScale.toString() + ')';
+};
+
+smallerScaleButton.addEventListener('click', function (evt) {
+  scaleHandler(evt);
+});
+
+biggerScaleButton.addEventListener('click', function (evt) {
+  scaleHandler(evt);
+});
+
+//
+// валидация хэш-тэгов и комментария
+//
 var checkHashtagLength = function (hashtags) {
   for (var j = 0; j < hashtags.length; j++) {
     if (hashtags[j].length > HASHTAG_MAX_LENGTH) {
@@ -451,7 +480,9 @@ textDescrInput.addEventListener('input', function (evt) {
   }
 });
 
-// отправка данных формы после проверки валидации
+//
+// отправка данных формы после валидации
+//
 var sendFormData = function () {
   if (imgUploadForm.checkValidity()) {
     imgUploadForm.submit();
