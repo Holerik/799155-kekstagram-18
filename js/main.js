@@ -114,12 +114,35 @@ document.querySelector('.comments-loader').classList.add('visually-hidden');
 var uploadFile = document.querySelector('#upload-file');
 var cancelButton = document.querySelector('#upload-cancel');
 
+var resetImgUploadPopup = function () {
+  var preview = imgUploadPopup.querySelector('.img-upload__preview');
+  preview.style.filter = '';
+  if (!(window.currentEffect === 'none')) {
+    // удалим текущий фильтр из списка классов
+    var effectClass = 'effects__preview--' + window.currentEffect;
+    if (preview.classList.contains(effectClass)) {
+      preview.classList.remove(effectClass);
+    }
+    window.currentEffect = 'none';
+    imgUploadPopup.querySelector('.effect-level__value').value = 0;
+    imgUploadPopup.querySelector('.img-upload__preview').style.transform = 'scale(100)';
+    imgUploadPopup.querySelector('.scale__control--value').value = '100%';
+    hashtagsInput.value = '';
+    textDescrInput.value = '';
+  }
+  window.currentEffect = 'none';
+  // убираем слайдер
+  imgUploadPopup.querySelector('.effect-level').classList.add('hidden');
+  imgUploadPopup.querySelector('.img-upload__preview').style.transform = 'scale(1)';
+};
+
 var openImgPopup = function () {
   imgUploadPopup.classList.remove('hidden');
   document.addEventListener('keydown', onPopupPressEsc);
 };
 
 var closeImgPopup = function () {
+  resetImgUploadPopup();
   imgUploadPopup.classList.add('hidden');
   document.removeEventListener('keydown', onPopupPressEsc);
   uploadFile.value = '';
@@ -211,23 +234,6 @@ var sendFormData = function () {
   return false;
 };
 
-var resetImgUploadPopup = function () {
-  var preview = imgUploadPopup.querySelector('.img-upload__preview');
-  preview.style.filter = '';
-  if (!(window.currentEffect === 'none')) {
-    // удалим текущий фильтр из списка классов
-    var effectClass = 'effects__preview--' + window.currentEffect;
-    if (preview.classList.contains(effectClass)) {
-      preview.classList.remove(effectClass);
-    }
-    window.currentEffect = 'none';
-    imgUploadPopup.querySelector('.effect-level__value').value = 0;
-    imgUploadPopup.querySelector('.img-upload__preview').style.transform = 'scale(100)';
-    imgUploadPopup.querySelector('.scale__control--value').value = '100%';
-    hashtagsInput.value = '';
-    textDescrInput.value = '';
-  }
-};
 
 var submitClickHandler = function (evt) {
   if (sendFormData()) {

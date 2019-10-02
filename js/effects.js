@@ -159,8 +159,6 @@
       effectClass = 'effects__preview--' + effect;
       preview.classList.add(effectClass);
       // добавляем фильтр в CSS
-      // var filter = effectStyle.filter + '(' + effectStyle.min.toString() + effectStyle.suff + ')';
-      // preview.style.filter = filter;
       preview.style.filter = effectStyle.filter + '(' + effectStyle.min.toString() + effectStyle.suff + ')';
       // устанавливаем начальное значение ползунка
       effectLevelPin.style.left = 0;
