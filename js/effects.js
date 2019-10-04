@@ -100,7 +100,8 @@
         if (effectStyle.max > 1) {
           filterValue = Math.ceil(filterValue);
         }
-        slider.querySelector('.effect-level__value').value = filterValue.toString() + effectStyle.suff;
+        var effectLevel = slider.querySelector('.effect-level__value');
+        effectLevel.value = filterValue.toString() + effectStyle.suff;
         // откорректируем фильтр в CSS
         var filter = effectStyle.filter + '(' + filterValue.toString() + effectStyle.suff + ')';
         preview.style.filter = filter;
