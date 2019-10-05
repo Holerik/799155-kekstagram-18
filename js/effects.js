@@ -49,6 +49,7 @@
 
   // показ окна редактирования изображения
   var imgUploadPopup = document.querySelector('.img-upload__overlay');
+  var slider = imgUploadPopup.querySelector('.effect-level');
   // пин слайдера уровня насыщенности эффекта
   var effectLevelPin = imgUploadPopup.querySelector('.effect-level__pin');
   var effectLevelDepth = imgUploadPopup.querySelector('.effect-level__depth');
@@ -65,7 +66,6 @@
   //
   // получить положение ползунка
   var getLevelPinPosition = function (evt) {
-    var slider = imgUploadPopup.querySelector('.effect-level');
     var rect = slider.getBoundingClientRect();
     var pos = MAX_SCALE_VALUE * (evt.clientX - rect.left) / rect.width;
     if (pos > MAX_SCALE_VALUE) {
@@ -79,7 +79,7 @@
   // установить положение ползунка и применить эффект
   var setLevelPinPosition = function (evt) {
     if (evt.which === 1) {
-      var levelValue = imgUploadPopup.querySelector('.effect-level__value');
+      var levelValue = slider.querySelector('.effect-level__value');
       levelValue.value = getLevelPinPosition(evt);
       var pos = levelValue.value.toString() + '%';
       effectLevelPin.style.left = pos;
@@ -94,14 +94,12 @@
             break;
           }
         }
-        var slider = imgUploadPopup.querySelector('.effect-level');
         var filterStep = (effectStyle.max - effectStyle.min) * levelValue.value / 100;
         var filterValue = effectStyle.min + filterStep;
         if (effectStyle.max > 1) {
           filterValue = Math.ceil(filterValue);
         }
-        var effectLevel = slider.querySelector('.effect-level__value');
-        effectLevel.value = filterValue.toString() + effectStyle.suff;
+        slider.querySelector('.effect-level__value').value = filterValue.toString() + effectStyle.suff;
         // откорректируем фильтр в CSS
         var filter = effectStyle.filter + '(' + filterValue.toString() + effectStyle.suff + ')';
         preview.style.filter = filter;
@@ -134,7 +132,6 @@
     }
 
     var preview = imgUploadPopup.querySelector('.img-upload__preview');
-    var slider = imgUploadPopup.querySelector('.effect-level');
     if (!(window.currentEffect === 'none')) {
       // удалим предыдущий фильтр из списка классов
       var effectClass = 'effects__preview--' + window.currentEffect;
@@ -171,7 +168,10 @@
   };
 
   imgUploadPopup.querySelector('.effects__list').addEventListener('click', function (evt) {
-    window.currentEffect = setEffect(evt);
+    var effect = setEffect(evt);
+    if (!(effect === null)) {
+      window.currentEffect = effect;
+    }
   });
 
   var onMouseUp = function (evt) {
