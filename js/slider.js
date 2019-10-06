@@ -25,6 +25,11 @@
     });
   };
 
+  window.resetSlider = function () {
+    sliderData.pinObj.style.left = 0;
+    sliderData.depthObj.style.width = 0;
+  };
+
   // получить положение ползунка
   var getPinPosition = function (evt) {
     var rect = sliderData.sliderObj.getBoundingClientRect();

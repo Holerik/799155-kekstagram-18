@@ -92,7 +92,7 @@
         if (effectStyle.max > 1) {
           filterValue = Math.ceil(filterValue);
         }
-        sliderInfo.valueObj.value = filterValue.toString();// + effectStyle.suff;
+        sliderInfo.valueObj.value = filterValue.toString();
         // откорректируем фильтр в CSS
         var filter = effectStyle.filter + '(' + filterValue.toString() + effectStyle.suff + ')';
         preview.style.filter = filter;
@@ -137,8 +137,7 @@
     }
     if (effectStyle.name === 'none') {
       // устанавливаем начальное значение ползунка
-      sliderInfo.pinObj.style.left = 0;
-      sliderInfo.depthObj.style.width = 0;
+      window.resetSlider();
       // скрываем слайдер
       if (!slider.classList.contains('hidden')) {
         slider.classList.add('hidden');
@@ -155,10 +154,7 @@
       // добавляем фильтр в CSS
       preview.style.filter = effectStyle.filter + '(' + effectStyle.min.toString() + effectStyle.suff + ')';
       // устанавливаем начальное значение ползунка
-      sliderInfo.pinObj.style.left = 0;
-      sliderInfo.depthObj.style.width = 0;
-      // устанавливаем начальное значение фильтра
-      sliderInfo.valueObj.value = effectStyle.min.toString();// + effectStyle.suff;
+      window.resetSlider();
     }
     return effect;
   };
