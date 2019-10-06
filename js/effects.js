@@ -50,40 +50,32 @@
   // показ окна редактирования изображения
   var imgUploadPopup = document.querySelector('.img-upload__overlay');
   var slider = imgUploadPopup.querySelector('.effect-level');
-  // пин слайдера уровня насыщенности эффекта
-  var effectLevelPin = imgUploadPopup.querySelector('.effect-level__pin');
-  var effectLevelDepth = imgUploadPopup.querySelector('.effect-level__depth');
   // кнопки масштабирования
   var smallerScaleButton = imgUploadPopup.querySelector('.scale__control--smaller');
   var biggerScaleButton = imgUploadPopup.querySelector('.scale__control--bigger');
   // текущий эффект
   window.currentEffect = 'none';
   // убираем слайдер
-  imgUploadPopup.querySelector('.effect-level').classList.add('hidden');
+  slider.classList.add('hidden');
 
-  //
-  // обработка событий ползунка для управления эффектами
-  //
-  // получить положение ползунка
-  var getLevelPinPosition = function (evt) {
-    var rect = slider.getBoundingClientRect();
-    var pos = MAX_SCALE_VALUE * (evt.clientX - rect.left) / rect.width;
-    if (pos > MAX_SCALE_VALUE) {
-      pos = MAX_SCALE_VALUE;
-    } else if (pos < 0) {
-      pos = 0;
-    }
-    return Math.floor(pos);
+  var sliderInfo = {
+    // объект слайдер
+    sliderObj: slider,
+    // пин слайдера уровня насыщенности эффекта
+    pinObj: slider.querySelector('.effect-level__pin'),
+    // полоска слайдера уровня насыщенности эффекта
+    depthObj: slider.querySelector('.effect-level__depth'),
+    // числовое значение слайдера
+    valueObj: slider.querySelector('.effect-level__value')
   };
 
-  // установить положение ползунка и применить эффект
-  var setLevelPinPosition = function (evt) {
-    if (evt.which === 1) {
-      var levelValue = slider.querySelector('.effect-level__value');
-      levelValue.value = getLevelPinPosition(evt);
-      var pos = levelValue.value.toString() + '%';
-      effectLevelPin.style.left = pos;
-      effectLevelDepth.style.width = pos;
+  var callBackSliderFunc = function (sliderData) {
+    if (!(sliderData === null)) {
+      sliderData.sliderObj = sliderInfo.sliderObj;
+      sliderData.pinObj = sliderInfo.pinObj;
+      sliderData.depthObj = sliderInfo.depthObj;
+      sliderData.valueObj = sliderInfo.valueObj;
+    } else {
       if (!(window.currentEffect === 'none')) {
         // применим эффект
         var preview = imgUploadPopup.querySelector('.img-upload__preview');
@@ -94,18 +86,22 @@
             break;
           }
         }
-        var filterStep = (effectStyle.max - effectStyle.min) * levelValue.value / 100;
+        var sliderPos = sliderInfo.valueObj.value;
+        var filterStep = (effectStyle.max - effectStyle.min) * sliderPos / 100;
         var filterValue = effectStyle.min + filterStep;
         if (effectStyle.max > 1) {
           filterValue = Math.ceil(filterValue);
         }
-        slider.querySelector('.effect-level__value').value = filterValue.toString() + effectStyle.suff;
+        sliderInfo.valueObj.value = filterValue.toString();// + effectStyle.suff;
         // откорректируем фильтр в CSS
         var filter = effectStyle.filter + '(' + filterValue.toString() + effectStyle.suff + ')';
         preview.style.filter = filter;
       }
     }
   };
+
+  // инициализация слайдера
+  window.initSlider(callBackSliderFunc);
 
   //
   // определение выбранного эффекта
@@ -141,8 +137,8 @@
     }
     if (effectStyle.name === 'none') {
       // устанавливаем начальное значение ползунка
-      effectLevelPin.style.left = 0;
-      effectLevelDepth.style.width = 0;
+      sliderInfo.pinObj.style.left = 0;
+      sliderInfo.depthObj.style.width = 0;
       // скрываем слайдер
       if (!slider.classList.contains('hidden')) {
         slider.classList.add('hidden');
@@ -159,10 +155,10 @@
       // добавляем фильтр в CSS
       preview.style.filter = effectStyle.filter + '(' + effectStyle.min.toString() + effectStyle.suff + ')';
       // устанавливаем начальное значение ползунка
-      effectLevelPin.style.left = 0;
-      effectLevelDepth.style.width = 0;
+      sliderInfo.pinObj.style.left = 0;
+      sliderInfo.depthObj.style.width = 0;
       // устанавливаем начальное значение фильтра
-      slider.querySelector('.effect-level__value').value = effectStyle.min.toString() + effectStyle.suff;
+      sliderInfo.valueObj.value = effectStyle.min.toString();// + effectStyle.suff;
     }
     return effect;
   };
@@ -173,26 +169,6 @@
       window.currentEffect = effect;
     }
   });
-
-  var onMouseUp = function (evt) {
-    evt.preventDefault();
-    document.removeEventListener('mousemove', onMouseMove);
-    effectLevelPin.removeEventListener('mouseup', onMouseUp);
-  };
-
-  effectLevelPin.addEventListener('mouseup', onMouseUp);
-
-  effectLevelPin.addEventListener('mousedown', function (evt) {
-    evt.preventDefault();
-  });
-
-  var onMouseMove = function (evt) {
-    evt.preventDefault();
-    setLevelPinPosition(evt);
-  };
-
-  document.addEventListener('mousemove', onMouseMove);
-
   //
   // обработка изменения масштаба
   //
