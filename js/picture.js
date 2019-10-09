@@ -162,5 +162,5 @@
     }
   };
 
-  userCommentInput.addEventListener('input', validateCommentInput);
+  window.userCommentInput.addEventListener('input', window.validateCommentInput);
 })();
