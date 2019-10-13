@@ -19,9 +19,10 @@
   window.initSlider = function (callBackFunc) {
     callBackFunction = callBackFunc;
     callBackFunction(sliderData);
-    sliderData.pinObj.addEventListener('mouseup', onMouseUp);
     sliderData.pinObj.addEventListener('mousedown', function (evt) {
       evt.preventDefault();
+      sliderData.pinObj.addEventListener('mouseup', onMouseUp);
+      document.addEventListener('mousemove', onMouseMove);
     });
   };
 
@@ -74,7 +75,5 @@
     evt.preventDefault();
     setPinPosition(evt);
   };
-
-  document.addEventListener('mousemove', onMouseMove);
 
 })();
