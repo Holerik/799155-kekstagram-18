@@ -1,4 +1,4 @@
-// main.js
+// upload.js
 'use strict';
 
 (function () {
@@ -12,6 +12,7 @@
   var submitButton = imgUploadPopup.querySelector('.img-upload__submit');
   var hashtagsInput = document.querySelector('.text__hashtags');
   var textDescrInput = document.querySelector('.text__description');
+
 
   // обработчик нажатия клавиши Esc
   window.onPopupPressEsc = function (evt) {

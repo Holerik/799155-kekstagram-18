@@ -417,7 +417,7 @@ main {
 
 
 /**
- * Кнопки изменения масштаба изобраения
+ * Кнопки изменения масштаба изображения
  */
 
 .img-upload__scale {
@@ -536,12 +536,15 @@ main {
   height: 600px;
 
   background-color: #ffffff;
+  background-size: cover;
 }
 
 .img-upload__preview img {
   display: block;
   max-width: 600px;
   max-height: 600px;
+  width: 100%;
+  height: auto;
 }
 
 
@@ -1309,6 +1312,7 @@ main {
 
   margin: 0;
   margin-bottom: 50px;
+  line-height: 1.2;
 
   font-size: 32px;
 }
@@ -1316,6 +1320,7 @@ main {
 .success__title {
   margin: 0;
   margin-bottom: 50px;
+  line-height: 1.2;
 
   font-size: 32px;
 }
@@ -1340,6 +1345,7 @@ main {
 .error__button,
 .success__button {
   padding: 5px 10px;
+  margin-bottom: 10px;
 
   color: #ffffff;
   text-transform: uppercase;

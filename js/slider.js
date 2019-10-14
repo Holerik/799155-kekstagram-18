@@ -19,10 +19,9 @@
   window.initSlider = function (callBackFunc) {
     callBackFunction = callBackFunc;
     callBackFunction(sliderData);
+    sliderData.pinObj.addEventListener('mouseup', onMouseUp);
     sliderData.pinObj.addEventListener('mousedown', function (evt) {
       evt.preventDefault();
-      sliderData.pinObj.addEventListener('mouseup', onMouseUp);
-      document.addEventListener('mousemove', onMouseMove);
     });
   };
 
@@ -55,6 +54,9 @@
 
   // установить положение ползунка
   var setPinPosition = function (evt) {
+    if (callBackFunction === null) {
+      return;
+    }
     if (testMousePos(evt)) {
       sliderPos = getPinPosition(evt);
       sliderData.valueObj.value = sliderPos;
@@ -75,5 +77,7 @@
     evt.preventDefault();
     setPinPosition(evt);
   };
+
+  document.addEventListener('mousemove', onMouseMove);
 
 })();
