@@ -3,9 +3,13 @@
 (function () {
 
   var FOTOS_COUNT = 25;
-  var DOM_VK_ENTER = 0x0D;
   var MAX_DESCR_LENGTH = 140;
   var MAX_COMMENTS = 5;
+
+  window.DOM_VK = {
+    esc: 0x1B,
+    enter: 0x0D
+  };
 
   var userFotos = [];
   var userPictures = null;
@@ -18,28 +22,62 @@
   .content
   .querySelector('.success');
 
+  var closeErrorSection = function (evt) {
+    var error = document.querySelector('.error');
+    var errorButton = document.querySelector('.error__buttons:last-child');
+    if (evt.target === error ||
+      (evt.target === errorButton) || (evt.keyCode === window.DOM_VK.esc)) {
+      error.remove();
+      document.removeEventListener('click', closeErrorSection);
+      evt.stopPropagation();
+    }
+  };
+
+  var closeErrorSectionOnEsc = function (evt) {
+    if (evt.keyCode === window.DOM_VK.esc) {
+      closeErrorSection(evt);
+      document.removeEventListener('keydown', closeErrorSectionOnEsc);
+    }
+  };
+
   // показываем окно с ошибкой загоузки с сервера
   var showError = function (message) {
     var errorSection = errorTempl.cloneNode(true);
     errorSection.querySelector('.error__title').textContent = 'Ошибка загрузки файла: ' + message;
     document.body.insertAdjacentElement('afterbegin', errorSection);
-    document.querySelector('.error__buttons:last-child').addEventListener('click', function () {
-      document.querySelector('.error').remove();
-    });
+    document.addEventListener('click', closeErrorSection);
+    document.addEventListener('keydown', closeErrorSectionOnEsc);
+  };
+
+  var closeSuccessSection = function (evt) {
+    var success = document.querySelector('.success');
+    var successButton = document.querySelector('.success__button');
+    if (evt.target === success ||
+      (evt.target === successButton) || (evt.keyCode === window.DOM_VK.esc)) {
+      success.remove();
+      document.removeEventListener('click', closeSuccessSection);
+      evt.stopPropagation();
+    }
+  };
+
+  var closeSuccessSectionOnEsc = function (evt) {
+    if (evt.keyCode === window.DOM_VK.esc) {
+      closeSuccessSection(evt);
+      document.removeEventListener('keydown', closeSuccessSectionOnEsc);
+    }
   };
 
   // показываем окно после успешной загрузки фотографий с сервера
-  var showSuccess = function () {
+  window.showSuccess = function () {
     var successSection = successTempl.cloneNode(true);
     document.body.insertAdjacentElement('afterbegin', successSection);
-    document.querySelector('.success__button').addEventListener('click', function () {
-      document.querySelector('.success').remove();
-    });
+    document.addEventListener('click', closeSuccessSection);
+    document.addEventListener('keydown', closeSuccessSectionOnEsc);
   };
 
   var onLoad = function (data) {
     loadFotosData(data);
-    showSuccess();
+    window.showSuccess();
   };
 
   window.onError = function (message) {
@@ -163,7 +201,7 @@
 
   // обработчик нажатия клавиши Enter
   var onPopupPressEnter = function (evt) {
-    if (evt.keyCode === DOM_VK_ENTER) {
+    if (evt.keyCode === window.DOM_VK.enter) {
       evt.preventDefault();
       var index = -1;
       for (var i = 0; i < userPictures.length; i++) {

@@ -2,7 +2,6 @@
 'use strict';
 
 (function () {
-  var DOM_VK_ESC = 0x1B;
   var HASHTAGS_MAX_COUNT = 5;
   var HASHTAG_MAX_LENGTH = 20;
 
@@ -16,7 +15,7 @@
 
   // обработчик нажатия клавиши Esc
   window.onPopupPressEsc = function (evt) {
-    if (evt.keyCode === DOM_VK_ESC) {
+    if (evt.keyCode === window.DOM_VK.esc) {
       if (hashtagsInput === document.activeElement) {
         return;
       }
@@ -52,13 +51,14 @@
       imgUploadPopup.querySelector('.effect-level__value').value = 0;
       imgUploadPopup.querySelector('.img-upload__preview').style.transform = 'scale(100)';
       imgUploadPopup.querySelector('.scale__control--value').value = '100%';
-      hashtagsInput.value = '';
-      textDescrInput.value = '';
     }
     window.currentEffect = 'none';
     // убираем слайдер
     imgUploadPopup.querySelector('.effect-level').classList.add('hidden');
     imgUploadPopup.querySelector('.img-upload__preview').style.transform = 'scale(1)';
+    // удаляем хэш-теги и комментарии
+    hashtagsInput.value = '';
+    textDescrInput.value = '';
   };
 
   var openImgPopup = function () {
@@ -138,7 +138,10 @@
   // отправка данных формы после валидации
   //
   var sendFormData = function () {
-    imgUploadForm.submit();
+    // убираем display='none', чтобы отправить форму
+    imgUploadPopup.querySelector('.effect-level__value').style.display = '';
+    window.save(new FormData(imgUploadForm), window.showSuccess, window.onError);
+    imgUploadPopup.querySelector('.effect-level__value').style.display = 'none';
   };
 
   var submitClickHandler = function (evt) {
@@ -151,5 +154,4 @@
   };
 
   submitButton.addEventListener('click', submitClickHandler);
-
 })();
