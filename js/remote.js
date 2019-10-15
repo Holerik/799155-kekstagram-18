@@ -2,7 +2,10 @@
 'use strict';
 
 (function () {
-  var DATA_FROM_URL = 'https://js.dump.academy/kekstagram/data';
+  var urlData = {
+    'to': 'https://js.dump.academy/kekstagram',
+    'from': 'https://js.dump.academy/kekstagram/data'
+  };
 
   window.load = function (onLoad, onError) {
     var xhr = new XMLHttpRequest();
@@ -15,14 +18,32 @@
         onError('Статус ответа:' + xhr.status + ' ' + xhr.statusText);
       }
     });
+
     xhr.addEventListener('error', function () {
       onError('Произошла ошибка соединения');
     });
+
     xhr.addEventListener('timeout', function () {
       onError('Запрос не успел выполниться за ' + xhr.timeout + ' мс');
     });
-    xhr.open('GET', DATA_FROM_URL);
+
+    xhr.open('GET', urlData.from);
     xhr.send();
+  };
+
+  window.save = function (data, onLoad, onError) {
+    var xhr = new XMLHttpRequest();
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', function () {
+      onLoad();
+    });
+    xhr.addEventListener('error', function () {
+      onError('Произошла ошибка соединения');
+    });
+
+    xhr.open('POST', urlData.to);
+    xhr.send(data);
+    return xhr.readyState;
   };
 
 })();
