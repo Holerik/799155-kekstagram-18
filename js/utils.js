@@ -32,16 +32,16 @@
   var MIN_LIKES = 15;
   var MAX_LIKES = 200;
 
-  var getRandomIndex = function (upperLimit) {
+  window.getRandomIndex = function (upperLimit) {
     return Math.floor(Math.random() * upperLimit);
   };
 
   var getRandomAutorName = function () {
-    return AUTOR_NAMES[getRandomIndex(AUTOR_NAMES.length)];
+    return AUTOR_NAMES[window.getRandomIndex(AUTOR_NAMES.length)];
   };
 
   var getRandomMessage = function () {
-    return MESSAGES[getRandomIndex(MESSAGES.length)];
+    return MESSAGES[window.getRandomIndex(MESSAGES.length)];
   };
 
   var getRandomValue = function (upperLimit) {
