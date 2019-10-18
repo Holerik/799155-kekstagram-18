@@ -3,6 +3,7 @@
 (function () {
 
   var FOTOS_COUNT = 25;
+  var RANDOM_FOTOS_COUNT = 10;
   var MAX_DESCR_LENGTH = 140;
   var MAX_COMMENTS = 5;
 
@@ -13,6 +14,81 @@
 
   var userFotos = [];
   var userPictures = null;
+
+  // нефильтрованные данные с сервера
+  window.data = null;
+  // блок с картинками
+  var picturesBlock = null;
+
+  var removeFotos = function () {
+    if (!(userPictures === null)) {
+      userPictures.forEach(function (picture) {
+        picture.removeEventListener('click', selectPicture);
+      });
+
+      while (picturesBlock) {
+        var picture = picturesBlock.querySelector('.picture');
+        if (picture) {
+          picturesBlock.removeChild(picture);
+        } else {
+          break;
+        }
+      }
+    }
+  };
+
+  window.filter.onPopularFilter = window.debounce(function () {
+    removeFotos();
+    // просто показываем нефильтрованные картинки
+    loadFotosData(window.data);
+  });
+
+  window.filter.onRandomFilter = window.debounce(function () {
+    removeFotos();
+    // получим массив RANDOM_FOTOS_COUNT случайных значений индексов
+    var indexes = [];
+    while (indexes.length < RANDOM_FOTOS_COUNT) {
+      var ind = window.getRandomIndex(window.data.length);
+      if (indexes.indexOf(ind) < 0) {
+        indexes.push(ind);
+      }
+    }
+    // покажем картинки с этими индексами
+    var data = window.data.filter(function (pict, index) {
+      if (indexes.indexOf(index) < 0) {
+        return false;
+      }
+      return true;
+    });
+    loadFotosData(data);
+  });
+
+  var pictureComarator = function (left, right) {
+    return right.comments.length - left.comments.length;
+  };
+
+  window.filter.onDiscussFilter = window.debounce(function () {
+    removeFotos();
+    var data = window.data.slice();
+    data.sort(pictureComarator);
+    loadFotosData(data);
+  });
+
+  var messagesTempl = document.querySelector('#messages').content
+  .querySelector('.img-upload__message--loading');
+
+  var showMessage = function () {
+    var messageBlock = messagesTempl.cloneNode(true);
+    document.body.insertAdjacentElement('afterbegin', messageBlock);
+  };
+
+  var closeMessage = function () {
+    var message = document.querySelector('.img-upload__message--loading');
+    if (!(message === null)) {
+      message.remove();
+    }
+  };
+
 
   var errorTempl = document.querySelector('#error')
   .content
@@ -58,6 +134,10 @@
       document.removeEventListener('click', closeSuccessSection);
       evt.stopPropagation();
     }
+    var filters = document.querySelector('.img-filters');
+    if (filters.classList.contains('img-filters--inactive')) {
+      filters.classList.remove('img-filters--inactive');
+    }
   };
 
   var closeSuccessSectionOnEsc = function (evt) {
@@ -76,11 +156,15 @@
   };
 
   var onLoad = function (data) {
+    window.data = data;
+    showMessage();
     loadFotosData(data);
+    closeMessage();
     window.showSuccess();
   };
 
   window.onError = function (message) {
+    closeMessage();
     showError(message);
   };
 
@@ -125,6 +209,7 @@
       fotoInfo.description = data[i].description;
       fotoInfo.likes = data[i].likes;
       fotoInfo.comments = [];
+      fotoInfo.maxComments = data[i].comments.length;
       for (var j = 0; j < data[i].comments.length; j++) {
         fotoInfo.comments[j] = createComment(data[i].comments[j]);
         if (j === MAX_COMMENTS - 1) {
@@ -139,7 +224,7 @@
       fragment.appendChild(createPicture(foto));
     });
 
-    var picturesBlock = document.querySelector('.pictures');
+    picturesBlock = document.querySelector('.pictures');
     picturesBlock.appendChild(fragment);
     userPictures = document.querySelectorAll('.picture');
 
@@ -156,7 +241,7 @@
     var pictureElem = pictureTempl.cloneNode(true);
     pictureElem.querySelector('.picture__img').src = foto.url;
     pictureElem.querySelector('.picture__likes').textContent = foto.likes;
-    pictureElem.querySelector('.picture__comments').textContent = foto.comments.length;
+    pictureElem.querySelector('.picture__comments').textContent = foto.maxComments;
     return pictureElem;
   };
 
