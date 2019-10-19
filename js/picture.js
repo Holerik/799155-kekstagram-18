@@ -63,14 +63,14 @@
     loadFotosData(data);
   });
 
-  var pictureComarator = function (left, right) {
+  var pictureComparator = function (left, right) {
     return right.comments.length - left.comments.length;
   };
 
   window.filter.onDiscussFilter = window.debounce(function () {
     removeFotos();
     var data = window.data.slice();
-    data.sort(pictureComarator);
+    data.sort(pictureComparator);
     loadFotosData(data);
   });
 
@@ -130,7 +130,9 @@
     var successButton = document.querySelector('.success__button');
     if (evt.target === success ||
       (evt.target === successButton) || (evt.keyCode === window.DOM_VK.esc)) {
-      success.remove();
+      if (!(success === null)) {
+        success.remove();
+      }
       document.removeEventListener('click', closeSuccessSection);
       evt.stopPropagation();
     }
@@ -178,6 +180,18 @@
     return commentElement;
   };
 
+  var pictureTempl = document.querySelector('#picture')
+    .content
+    .querySelector('.picture');
+
+  var createPicture = function (foto) {
+    var pictureElem = pictureTempl.cloneNode(true);
+    pictureElem.querySelector('.picture__img').src = foto.url;
+    pictureElem.querySelector('.picture__likes').textContent = foto.likes;
+    pictureElem.querySelector('.picture__comments').textContent = foto.maxComments;
+    return pictureElem;
+  };
+
   // src - фотография, которую выбрали для просмотра
   // возвращаем индекс этой фотографии в массиве userFotos
   var selectFoto = function (src) {
@@ -210,11 +224,9 @@
       fotoInfo.likes = data[i].likes;
       fotoInfo.comments = [];
       fotoInfo.maxComments = data[i].comments.length;
+      // создадим комментарии
       for (var j = 0; j < data[i].comments.length; j++) {
         fotoInfo.comments[j] = createComment(data[i].comments[j]);
-        if (j === MAX_COMMENTS - 1) {
-          break;
-        }
       }
       userFotos[i] = fotoInfo;
     }
@@ -233,18 +245,6 @@
     });
   };
 
-  var pictureTempl = document.querySelector('#picture')
-    .content
-    .querySelector('.picture');
-
-  var createPicture = function (foto) {
-    var pictureElem = pictureTempl.cloneNode(true);
-    pictureElem.querySelector('.picture__img').src = foto.url;
-    pictureElem.querySelector('.picture__likes').textContent = foto.likes;
-    pictureElem.querySelector('.picture__comments').textContent = foto.maxComments;
-    return pictureElem;
-  };
-
   // загрузка фотографий с сервера
   window.load(onLoad, window.onError);
 
@@ -252,6 +252,31 @@
   window.bigPicturePopup = document.querySelector('.big-picture');
   // поле комментария
   window.userCommentInput = window.bigPicturePopup.querySelector('.social__footer-text');
+  // блок комментариев
+  var commentsBlock = document.querySelector('.social__comments');
+  // кнопка показа следующих MAX_COMMENTS комментариев
+  var commentsLoaderButton = window.bigPicturePopup.querySelector('.comments-loader');
+
+  var firstCommentNumber = 0;
+  var lastCommentNumber = MAX_COMMENTS - 1;
+  var userFotoIndex = -1;
+
+  commentsLoaderButton.addEventListener('click', function () {
+    var commentsCount = userFotos[userFotoIndex].comments.length;
+    // уберем текущие комментарии
+    commentsBlock.innerHTML = '';
+    if (lastCommentNumber + 1 < commentsCount) {
+      firstCommentNumber = lastCommentNumber + 1;
+      lastCommentNumber += MAX_COMMENTS;
+      if (lastCommentNumber >= commentsCount) {
+        lastCommentNumber = commentsCount - 1;
+      }
+    } else {
+      firstCommentNumber = 0;
+      lastCommentNumber = MAX_COMMENTS > commentsCount ? commentsCount - 1 : MAX_COMMENTS - 1;
+    }
+    addCommetsToBlock();
+  });
 
   window.closePopup = function () {
     window.bigPicturePopup.classList.add('hidden');
@@ -263,22 +288,32 @@
     window.closePopup();
   });
 
+  var addCommetsToBlock = function () {
+    var fragment = document.createDocumentFragment();
+    for (var i = firstCommentNumber; i <= lastCommentNumber; i++) {
+      var comment = userFotos[userFotoIndex].comments[i];
+      fragment.appendChild(comment);
+    }
+    commentsBlock.appendChild(fragment);
+    var pp = document.querySelector('p.social__comment-count');
+    var commentsCount = lastCommentNumber + 1;
+    pp.childNodes[0].textContent = commentsCount.toString() + ' из ';
+  };
+
   var openBigPicturePopup = function (index) {
+    userFotoIndex = index;
     document.querySelector('.big-picture__img').firstElementChild.src = userFotos[index].url;
     document.querySelector('.likes-count').textContent = userFotos[index].likes;
-    document.querySelector('.comments-count').textContent = userFotos[index].comments.length;
+    lastCommentNumber = userFotos[index].maxComments > MAX_COMMENTS ?
+      MAX_COMMENTS : userFotos[index].maxComments;
+    firstCommentNumber = 0;
+    lastCommentNumber -= 1;
+    document.querySelector('.comments-count').textContent = userFotos[index].maxComments;
     document.querySelector('.social__caption').textContent = userFotos[index].description;
-    // блок комментариев
-    var commentsBlock = document.querySelector('.social__comments');
     // удаление временных комментариев из блока
     commentsBlock.innerHTML = '';
-    // добавление комментариев в блок
-    var fragment = document.createDocumentFragment();
-    userFotos[index].comments.forEach(function (comment) {
-      fragment.appendChild(comment);
-    });
-    commentsBlock.appendChild(fragment);
-
+    // добавление  комментариев в блок
+    addCommetsToBlock();
     // показ элемента .big-picture
     window.bigPicturePopup.classList.remove('hidden');
     document.addEventListener('keydown', window.onPopupPressEsc);
@@ -302,9 +337,6 @@
   };
 
   document.addEventListener('keydown', onPopupPressEnter);
-
-  window.bigPicturePopup.querySelector('.social__comment-count').classList.add('visually-hidden');
-  window.bigPicturePopup.querySelector('.comments-loader').classList.add('visually-hidden');
 
   // валидация комментария полноэкранного просмотра
   window.validateCommentInput = function (evt) {
