@@ -110,7 +110,7 @@
     }
   };
 
-  // показываем окно с ошибкой загоузки с сервера
+  // показываем окно с ошибкой загрузки с сервера
   var showError = function (message) {
     var errorSection = errorTempl.cloneNode(true);
     errorSection.querySelector('.error__title').textContent = 'Ошибка загрузки файла: ' + message;
