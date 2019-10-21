@@ -49,14 +49,18 @@
         lastCommentNumber = commentsCount - 1;
       }
     } else {
-      firstCommentNumber = 0;
-      lastCommentNumber = MAX_COMMENTS > commentsCount ? commentsCount - 1 : MAX_COMMENTS - 1;
+      // спрячем кнопку доп.комментариев
+      commentsLoaderButton.classList.add('hidden');
+      // код позволяющий вернуться в начало комментариев
+      // firstCommentNumber = 0;
+      // lastCommentNumber = MAX_COMMENTS > commentsCount ? commentsCount - 1 : MAX_COMMENTS - 1;
     }
     addCommetsToBlock();
   });
 
   window.closePopup = function () {
     window.bigPicturePopup.classList.add('hidden');
+    document.body.classList.remove('modal-open');
     document.removeEventListener('keydown', window.onPopupPressEsc);
   };
 
@@ -93,7 +97,11 @@
     addCommetsToBlock();
     // показ элемента .big-picture
     window.bigPicturePopup.classList.remove('hidden');
+    document.body.classList.add('modal-open');
     document.addEventListener('keydown', window.onPopupPressEsc);
+    if (commentsLoaderButton.classList.contains('hidden')) {
+      commentsLoaderButton.classList.remove('hidden');
+    }
   };
 
   // валидация комментария полноэкранного просмотра
