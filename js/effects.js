@@ -93,6 +93,8 @@
           filterValue = Math.ceil(filterValue);
         }
         sliderInfo.valueObj.value = filterValue.toString();
+        sliderInfo.valueObj.min = effectStyle.min;
+        sliderInfo.valueObj.max = effectStyle.max;
         // откорректируем фильтр в CSS
         var filter = effectStyle.filter + '(' + filterValue.toString() + effectStyle.suff + ')';
         preview.style.filter = filter;
@@ -126,7 +128,6 @@
         break;
       }
     }
-
     var preview = imgUploadPopup.querySelector('.img-upload__preview');
 
     if (!(window.currentEffect === 'none')) {

@@ -54,6 +54,7 @@
       imgUploadPopup.querySelector('.scale__control--value').value = '100%';
     }
     window.currentEffect = 'none';
+    imgUploadPopup.querySelector('#effect-none').checked = true;
     // убираем слайдер
     imgUploadPopup.querySelector('.effect-level').classList.add('hidden');
     imgUploadPopup.querySelector('.img-upload__preview').style.transform = 'scale(1)';
@@ -150,16 +151,11 @@
 
   var submitClickHandler = function (evt) {
     evt.preventDefault();
-    // убираем display='none', чтобы отправить форму
-    var levelValue = imgUploadPopup.querySelector('.effect-level__value');
-    levelValue.style.display = '';
     if (imgUploadForm.reportValidity()) {
       sendFormData();
       resetImgUploadPopup();
       closeImgPopup();
     }
-    // возвращаем display='none'
-    levelValue.style.display = 'none';
   };
 
   submitButton.addEventListener('click', submitClickHandler);
