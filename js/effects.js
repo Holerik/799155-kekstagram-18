@@ -128,6 +128,7 @@
     }
 
     var preview = imgUploadPopup.querySelector('.img-upload__preview');
+
     if (!(window.currentEffect === 'none')) {
       // удалим предыдущий фильтр из списка классов
       var effectClass = 'effects__preview--' + window.currentEffect;

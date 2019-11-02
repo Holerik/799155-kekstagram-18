@@ -40,20 +40,17 @@
 
   commentsLoaderButton.addEventListener('click', function () {
     var commentsCount = window.userFotos[userFotoIndex].comments.length;
-    // уберем текущие комментарии
-    commentsBlock.innerHTML = '';
     if (lastCommentNumber + 1 < commentsCount) {
       firstCommentNumber = lastCommentNumber + 1;
       lastCommentNumber += MAX_COMMENTS;
       if (lastCommentNumber >= commentsCount) {
         lastCommentNumber = commentsCount - 1;
+        // все комментарии на экране - спрячем кнопку доп.комментариев
+        commentsLoaderButton.classList.add('hidden');
       }
     } else {
-      // спрячем кнопку доп.комментариев
+      // прячем кнопку доп.комментариев
       commentsLoaderButton.classList.add('hidden');
-      // код позволяющий вернуться в начало комментариев
-      // firstCommentNumber = 0;
-      // lastCommentNumber = MAX_COMMENTS > commentsCount ? commentsCount - 1 : MAX_COMMENTS - 1;
     }
     addCommetsToBlock();
   });
@@ -76,9 +73,9 @@
       fragment.appendChild(comment);
     }
     commentsBlock.appendChild(fragment);
-    var pp = document.querySelector('p.social__comment-count');
+    var commentCount = document.querySelector('p.social__comment-count');
     var commentsCount = lastCommentNumber + 1;
-    pp.childNodes[0].textContent = commentsCount.toString() + ' из ';
+    commentCount.childNodes[0].textContent = commentsCount.toString() + ' из ';
   };
 
   window.openBigPicturePopup = function (index) {
@@ -99,8 +96,12 @@
     window.bigPicturePopup.classList.remove('hidden');
     document.body.classList.add('modal-open');
     document.addEventListener('keydown', window.onPopupPressEsc);
-    if (commentsLoaderButton.classList.contains('hidden')) {
-      commentsLoaderButton.classList.remove('hidden');
+    if (window.userFotos[index].maxComments >= MAX_COMMENTS) {
+      if (commentsLoaderButton.classList.contains('hidden')) {
+        commentsLoaderButton.classList.remove('hidden');
+      }
+    } else {
+      commentsLoaderButton.classList.add('hidden');
     }
   };
 

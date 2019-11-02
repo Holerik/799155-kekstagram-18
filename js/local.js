@@ -23,7 +23,6 @@
         reader.addEventListener('error', function () {
           window.onError(reader.error.message);
         });
-
         reader.readAsDataURL(file);
       }
     }
