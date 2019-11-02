@@ -149,7 +149,7 @@
   };
 
   var submitClickHandler = function (evt) {
-    // evt.preventDefault();
+    evt.preventDefault();
     // убираем display='none', чтобы отправить форму
     var levelValue = imgUploadPopup.querySelector('.effect-level__value');
     levelValue.style.display = '';
