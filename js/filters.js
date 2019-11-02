@@ -13,7 +13,7 @@
   var randButton = document.querySelector('#filter-random');
   var discButton = document.querySelector('#filter-discussed');
 
-  popButton.addEventListener('click', function () {
+  var pressPopButton = function () {
     if (randButton.classList.contains('img-filters__button--active')) {
       randButton.classList.remove('img-filters__button--active');
     }
@@ -22,9 +22,16 @@
     }
     popButton.classList.add('img-filters__button--active');
     window.filter.onPopularFilter();
+  };
+
+  popButton.addEventListener('click', pressPopButton);
+  popButton.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === window.DOM_VK.enter) {
+      pressPopButton();
+    }
   });
 
-  randButton.addEventListener('click', function () {
+  var pressRandButton = function () {
     if (popButton.classList.contains('img-filters__button--active')) {
       popButton.classList.remove('img-filters__button--active');
     }
@@ -33,9 +40,16 @@
     }
     randButton.classList.add('img-filters__button--active');
     window.filter.onRandomFilter();
+  };
+
+  randButton.addEventListener('click', pressRandButton);
+  randButton.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === window.DOM_VK.enter) {
+      pressRandButton();
+    }
   });
 
-  discButton.addEventListener('click', function () {
+  var pressDiscButton = function () {
     if (popButton.classList.contains('img-filters__button--active')) {
       popButton.classList.remove('img-filters__button--active');
     }
@@ -44,6 +58,13 @@
     }
     discButton.classList.add('img-filters__button--active');
     window.filter.onDiscussFilter();
+  };
+
+  discButton.addEventListener('click', pressDiscButton);
+  discButton.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === window.DOM_VK.enter) {
+      pressDiscButton();
+    }
   });
 
   window.filter = filter;

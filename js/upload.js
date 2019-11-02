@@ -36,6 +36,7 @@
   // загрузка изображений и работа с фильтрами
   //
   var uploadFile = document.querySelector('#upload-file');
+  var uploadControl = document.querySelector('.img-upload__start');
   var cancelButton = document.querySelector('#upload-cancel');
 
   var resetImgUploadPopup = function () {
@@ -77,6 +78,11 @@
     openImgPopup();
   });
 
+  uploadControl.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === window.DOM_VK.enter) {
+      uploadFile.click();
+    }
+  });
   cancelButton.addEventListener('click', function () {
     closeImgPopup();
   });
@@ -94,10 +100,11 @@
   };
 
   var checkHashtagIsDouble = function (hashtags) {
-    var htag = hashtags[hashtags.length - 1];
-    for (var j = 0; j < hashtags.length - 2; j++) {
-      if (hashtags[j] === htag) {
-        return true;
+    for (var i = hashtags.length - 1; i > 0; i--) {
+      for (var j = i - 1; j >= 0; j--) {
+        if (hashtags[i].toLowerCase() === hashtags[j].toLowerCase()) {
+          return true;
+        }
       }
     }
     return false;
@@ -138,19 +145,21 @@
   // отправка данных формы после валидации
   //
   var sendFormData = function () {
-    // убираем display='none', чтобы отправить форму
-    imgUploadPopup.querySelector('.effect-level__value').style.display = '';
     window.save(new FormData(imgUploadForm), window.showSuccess, window.onError);
-    imgUploadPopup.querySelector('.effect-level__value').style.display = 'none';
   };
 
   var submitClickHandler = function (evt) {
-    evt.preventDefault();
+    // evt.preventDefault();
+    // убираем display='none', чтобы отправить форму
+    var levelValue = imgUploadPopup.querySelector('.effect-level__value');
+    levelValue.style.display = '';
     if (imgUploadForm.reportValidity()) {
       sendFormData();
       resetImgUploadPopup();
       closeImgPopup();
     }
+    // возвращаем display='none'
+    levelValue.style.display = 'none';
   };
 
   submitButton.addEventListener('click', submitClickHandler);

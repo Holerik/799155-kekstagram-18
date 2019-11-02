@@ -3,8 +3,8 @@
 
 (function () {
   var urlData = {
-    'to': 'https://js.dump.academy/kekstagram',
-    'from': 'https://js.dump.academy/kekstagram/data'
+    to: 'https://js.dump.academy/kekstagram',
+    from: 'https://js.dump.academy/kekstagram/data'
   };
 
   window.load = function (onLoad, onError) {
@@ -35,7 +35,7 @@
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
     xhr.addEventListener('load', function () {
-      onLoad();
+      onLoad(xhr.response);
     });
     xhr.addEventListener('error', function () {
       onError('Произошла ошибка соединения');

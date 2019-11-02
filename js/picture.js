@@ -40,23 +40,24 @@
 
   commentsLoaderButton.addEventListener('click', function () {
     var commentsCount = window.userFotos[userFotoIndex].comments.length;
-    // уберем текущие комментарии
-    commentsBlock.innerHTML = '';
     if (lastCommentNumber + 1 < commentsCount) {
       firstCommentNumber = lastCommentNumber + 1;
       lastCommentNumber += MAX_COMMENTS;
       if (lastCommentNumber >= commentsCount) {
         lastCommentNumber = commentsCount - 1;
+        // все комментарии на экране - спрячем кнопку доп.комментариев
+        commentsLoaderButton.classList.add('hidden');
       }
     } else {
-      firstCommentNumber = 0;
-      lastCommentNumber = MAX_COMMENTS > commentsCount ? commentsCount - 1 : MAX_COMMENTS - 1;
+      // прячем кнопку доп.комментариев
+      commentsLoaderButton.classList.add('hidden');
     }
     addCommetsToBlock();
   });
 
   window.closePopup = function () {
     window.bigPicturePopup.classList.add('hidden');
+    document.body.classList.remove('modal-open');
     document.removeEventListener('keydown', window.onPopupPressEsc);
   };
 
@@ -72,9 +73,9 @@
       fragment.appendChild(comment);
     }
     commentsBlock.appendChild(fragment);
-    var pp = document.querySelector('p.social__comment-count');
+    var commentCount = document.querySelector('p.social__comment-count');
     var commentsCount = lastCommentNumber + 1;
-    pp.childNodes[0].textContent = commentsCount.toString() + ' из ';
+    commentCount.childNodes[0].textContent = commentsCount.toString() + ' из ';
   };
 
   window.openBigPicturePopup = function (index) {
@@ -93,7 +94,15 @@
     addCommetsToBlock();
     // показ элемента .big-picture
     window.bigPicturePopup.classList.remove('hidden');
+    document.body.classList.add('modal-open');
     document.addEventListener('keydown', window.onPopupPressEsc);
+    if (window.userFotos[index].maxComments >= MAX_COMMENTS) {
+      if (commentsLoaderButton.classList.contains('hidden')) {
+        commentsLoaderButton.classList.remove('hidden');
+      }
+    } else {
+      commentsLoaderButton.classList.add('hidden');
+    }
   };
 
   // валидация комментария полноэкранного просмотра

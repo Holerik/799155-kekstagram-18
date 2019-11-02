@@ -84,7 +84,6 @@
   var onLoad = function (data) {
     window.data = data;
     loadFotosData(data);
-    window.showSuccess();
     document.querySelector('.img-filters').classList.remove('img-filters--inactive');
   };
 

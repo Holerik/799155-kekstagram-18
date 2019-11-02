@@ -28,6 +28,7 @@
   window.resetSlider = function () {
     sliderData.pinObj.style.left = 0;
     sliderData.depthObj.style.width = 0;
+    sliderData.valueObj.value = 0;
   };
 
   // получить положение ползунка
@@ -72,6 +73,16 @@
     document.removeEventListener('mousemove', onMouseMove);
     sliderData.pinObj.removeEventListener('mouseup', onMouseUp);
   };
+
+  var onMouseDown = function (evt) {
+    if (testMousePos(evt)) {
+      evt.preventDefault();
+      document.addEventListener('mousemove', onMouseMove);
+      sliderData.pinObj.addEventListener('mouseup', onMouseUp);
+    }
+  };
+
+  document.addEventListener('mousedown', onMouseDown);
 
   var onMouseMove = function (evt) {
     evt.preventDefault();
