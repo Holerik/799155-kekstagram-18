@@ -7,33 +7,36 @@
 
   // даные для инициализации слайдера
   var sliderData = {
-    sliderObj: null,
-    pinObj: null,
-    depthObj: null,
-    valueObj: null
+    sliderObject: null,
+    pinObject: null,
+    depthObject: null,
+    valueObject: null
   };
 
-  var sliderPos = 0;
-  var callBackFunction = null;
-
-  window.initSlider = function (callBackFunc) {
-    callBackFunction = callBackFunc;
-    callBackFunction(sliderData);
-    sliderData.pinObj.addEventListener('mouseup', onMouseUp);
-    sliderData.pinObj.addEventListener('mousedown', function (evt) {
-      evt.preventDefault();
-    });
+  window.slider = {
+    initSlider: function (callback) {
+      callbackFunction = callback;
+      callbackFunction(sliderData);
+      sliderData.pinObject.addEventListener('mouseup', mouseUpHandler);
+      sliderData.pinObject.addEventListener('mousedown', function (evt) {
+        evt.preventDefault();
+      });
+    },
+    resetSlider: function () {
+      sliderData.pinObject.style.left = 0;
+      sliderData.depthObject.style.width = 0;
+      sliderData.valueObject.value = 0;
+    },
+    setSlider: function (style) {
+      setSliderPosition(style.value);
+    }
   };
 
-  window.resetSlider = function () {
-    sliderData.pinObj.style.left = 0;
-    sliderData.depthObj.style.width = 0;
-    sliderData.valueObj.value = 0;
-  };
+  var callbackFunction = null;
 
   // получить положение ползунка
   var getPinPosition = function (evt) {
-    var rect = sliderData.sliderObj.getBoundingClientRect();
+    var rect = sliderData.sliderObject.getBoundingClientRect();
     var pos = MAX_SLIDER_VALUE * (evt.clientX - rect.left) / rect.width;
     if (pos > MAX_SLIDER_VALUE) {
       pos = MAX_SLIDER_VALUE;
@@ -44,7 +47,7 @@
   };
 
   var testMousePos = function (evt) {
-    var rect = sliderData.sliderObj.getBoundingClientRect();
+    var rect = sliderData.sliderObject.getBoundingClientRect();
     if (!(evt.which === 1) || (evt.clientY < rect.top) ||
         (evt.clientY > rect.bottom) ||
         (evt.clientX < rect.left) || (evt.clientX > rect.right)) {
@@ -53,42 +56,46 @@
     return true;
   };
 
+  var setSliderPosition = function (position) {
+    sliderData.valueObject.value = position;
+    var pos = position.toString() + '%';
+    sliderData.pinObject.style.left = pos;
+    sliderData.depthObject.style.width = pos;
+    callbackFunction(null);
+  };
+
   // установить положение ползунка
   var setPinPosition = function (evt) {
-    if (callBackFunction === null) {
+    if (callbackFunction === null) {
       return;
     }
     if (testMousePos(evt)) {
-      sliderPos = getPinPosition(evt);
-      sliderData.valueObj.value = sliderPos;
-      var pos = sliderPos.toString() + '%';
-      sliderData.pinObj.style.left = pos;
-      sliderData.depthObj.style.width = pos;
-      callBackFunction(null);
+      var sliderPos = getPinPosition(evt);
+      setSliderPosition(sliderPos);
     }
   };
 
-  var onMouseUp = function (evt) {
+  var mouseUpHandler = function (evt) {
     evt.preventDefault();
-    document.removeEventListener('mousemove', onMouseMove);
-    sliderData.pinObj.removeEventListener('mouseup', onMouseUp);
+    document.removeEventListener('mousemove', mouseMoveHandler);
+    sliderData.pinObject.removeEventListener('mouseup', mouseUpHandler);
   };
 
-  var onMouseDown = function (evt) {
+  var mouseDownHandler = function (evt) {
     if (testMousePos(evt)) {
       evt.preventDefault();
-      document.addEventListener('mousemove', onMouseMove);
-      sliderData.pinObj.addEventListener('mouseup', onMouseUp);
+      document.addEventListener('mousemove', mouseMoveHandler);
+      sliderData.pinObject.addEventListener('mouseup', mouseUpHandler);
     }
   };
 
-  document.addEventListener('mousedown', onMouseDown);
+  document.addEventListener('mousedown', mouseDownHandler);
 
-  var onMouseMove = function (evt) {
+  var mouseMoveHandler = function (evt) {
     evt.preventDefault();
     setPinPosition(evt);
   };
 
-  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mousemove', mouseMoveHandler);
 
 })();

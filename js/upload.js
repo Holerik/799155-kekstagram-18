@@ -6,29 +6,30 @@
   var HASHTAG_MAX_LENGTH = 20;
 
   // показ формы редактирования изображения
-  var imgUploadForm = document.querySelector('#upload-select-image');
-  var imgUploadPopup = document.querySelector('.img-upload__overlay');
-  var submitButton = imgUploadPopup.querySelector('.img-upload__submit');
+  var imageUploadForm = document.querySelector('#upload-select-image');
+  var imageUploadPopup = document.querySelector('.img-upload__overlay');
+  var submitButton = imageUploadPopup.querySelector('.img-upload__submit');
   var hashtagsInput = document.querySelector('.text__hashtags');
-  var textDescrInput = document.querySelector('.text__description');
+  var textDescriptionInput = document.querySelector('.text__description');
 
-
-  // обработчик нажатия клавиши Esc
-  window.onPopupPressEsc = function (evt) {
-    if (evt.keyCode === window.DOM_VK.esc) {
-      if (hashtagsInput === document.activeElement) {
-        return;
-      }
-      if (textDescrInput === document.activeElement) {
-        return;
-      }
-      if (window.userCommentInput === document.activeElement) {
-        return;
-      }
-      if (!window.bigPicturePopup.classList.contains('hidden')) {
-        window.closePopup();
-      } else if (!imgUploadPopup.classList.contains('hidden')) {
-        closeImgPopup();
+  window.upload = {
+    // обработчик нажатия клавиши Esc
+    popupEscHandler: function (evt) {
+      if (evt.keyCode === window.DOM_VK.ESC) {
+        if (hashtagsInput === document.activeElement) {
+          return;
+        }
+        if (textDescriptionInput === document.activeElement) {
+          return;
+        }
+        if (window.picture.userCommentInput === document.activeElement) {
+          return;
+        }
+        if (!window.picture.bigPicturePopup.classList.contains('hidden')) {
+          window.picture.closeBigPicturePopup();
+        } else if (!imageUploadPopup.classList.contains('hidden')) {
+          closeImagePopup();
+        }
       }
     }
   };
@@ -39,65 +40,62 @@
   var uploadControl = document.querySelector('.img-upload__start');
   var cancelButton = document.querySelector('#upload-cancel');
 
-  var resetImgUploadPopup = function () {
-    var preview = imgUploadPopup.querySelector('.img-upload__preview');
+  var resetImageUploadPopup = function () {
+    var preview = imageUploadPopup.querySelector('.img-upload__preview');
     preview.style.filter = '';
-    if (!(window.currentEffect === 'none')) {
+    if (!(window.effects.currentEffect === 'none')) {
     // удалим текущий фильтр из списка классов
-      var effectClass = 'effects__preview--' + window.currentEffect;
+      var effectClass = 'effects__preview--' + window.effects.currentEffect;
       if (preview.classList.contains(effectClass)) {
         preview.classList.remove(effectClass);
       }
-      window.currentEffect = 'none';
-      imgUploadPopup.querySelector('.effect-level__value').value = 0;
-      imgUploadPopup.querySelector('.img-upload__preview').style.transform = 'scale(100)';
-      imgUploadPopup.querySelector('.scale__control--value').value = '100%';
+      window.effects.currentEffect = 'none';
+      imageUploadPopup.querySelector('.effect-level__value').value = 0;
+      imageUploadPopup.querySelector('.img-upload__preview').style.transform = 'scale(100)';
+      imageUploadPopup.querySelector('.scale__control--value').value = '100%';
     }
-    window.currentEffect = 'none';
-    imgUploadPopup.querySelector('#effect-none').checked = true;
+    window.effects.currentEffect = 'none';
+    imageUploadPopup.querySelector('#effect-none').checked = true;
     // убираем слайдер
-    imgUploadPopup.querySelector('.effect-level').classList.add('hidden');
-    imgUploadPopup.querySelector('.img-upload__preview').style.transform = 'scale(1)';
+    imageUploadPopup.querySelector('.effect-level').classList.add('hidden');
+    imageUploadPopup.querySelector('.img-upload__preview').style.transform = 'scale(1)';
     // удаляем хэш-теги и комментарии
     hashtagsInput.value = '';
-    textDescrInput.value = '';
+    textDescriptionInput.value = '';
   };
 
-  var openImgPopup = function () {
-    imgUploadPopup.classList.remove('hidden');
-    document.addEventListener('keydown', window.onPopupPressEsc);
+  var openImagePopup = function () {
+    imageUploadPopup.classList.remove('hidden');
+    document.addEventListener('keydown', window.upload.popupEscHandler);
   };
 
-  var closeImgPopup = function () {
-    resetImgUploadPopup();
-    imgUploadPopup.classList.add('hidden');
-    document.removeEventListener('keydown', window.onPopupPressEsc);
+  var closeImagePopup = function () {
+    resetImageUploadPopup();
+    imageUploadPopup.classList.add('hidden');
+    document.removeEventListener('keydown', window.upload.popupEscHandler);
     uploadFile.value = '';
   };
 
   uploadFile.addEventListener('change', function () {
-    openImgPopup();
+    openImagePopup();
   });
 
   uploadControl.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.DOM_VK.enter) {
+    if (evt.keyCode === window.DOM_VK.ENTER) {
       uploadFile.click();
     }
   });
   cancelButton.addEventListener('click', function () {
-    closeImgPopup();
+    closeImagePopup();
   });
 
   //
   // валидация хэш-тэгов и комментария
   //
   var checkHashtagLength = function (hashtags) {
-    for (var j = 0; j < hashtags.length; j++) {
-      if (hashtags[j].length > HASHTAG_MAX_LENGTH) {
-        return false;
-      }
-    }
-    return true;
+    return hashtags.every(function (hashtag) {
+      return hashtag.length <= HASHTAG_MAX_LENGTH;
+    });
   };
 
   var checkHashtagIsDouble = function (hashtags) {
@@ -113,22 +111,21 @@
 
   hashtagsInput.addEventListener('input', function (evt) {
     var target = evt.target;
-    var hashArray = target.value.split(' ');
-    for (var j = 0; j < hashArray.length; j++) {
-      if (!(hashArray[j][0] === '#')) {
+    var hashTags = target.value.split(' ');
+    target.setCustomValidity('');
+    for (var j = 0; j < hashTags.length; j++) {
+      if (!(hashTags[j][0] === '#') && (hashTags[j].length > 0)) {
         target.setCustomValidity('# - обязательный символ');
-      } else if (hashArray[j].length === 1) {
+      } else if (hashTags[j].length === 1) {
         target.setCustomValidity('хэш-тэг не может состоять тодько из решетки');
-      } else if (hashArray[j].indexOf('#', 1) > 0) {
+      } else if (hashTags[j].indexOf('#', 1) > 0) {
         target.setCustomValidity('хэш-тэги разделяются пробелами');
-      } else if (hashArray.length > HASHTAGS_MAX_COUNT) {
+      } else if (hashTags.length > HASHTAGS_MAX_COUNT) {
         target.setCustomValidity('хэш-тэгов не может быть больше 5');
-      } else if (!checkHashtagLength(hashArray)) {
+      } else if (!checkHashtagLength(hashTags)) {
         target.setCustomValidity('максимальная длина хэш-тэга 20 символов с решеткой');
-      } else if (checkHashtagIsDouble(hashArray)) {
+      } else if (checkHashtagIsDouble(hashTags)) {
         target.setCustomValidity('один и тот же хэш-тэг не может быть использован дважды');
-      } else {
-        target.setCustomValidity('');
       }
     }
     if (target.validity.customError) {
@@ -140,23 +137,24 @@
     }
   });
 
-  textDescrInput.addEventListener('input', window.validateCommentInput);
+  textDescriptionInput.addEventListener('input', window.picture.inputCommentHandler);
 
   //
   // отправка данных формы после валидации
   //
   var sendFormData = function () {
-    window.save(new FormData(imgUploadForm), window.showSuccess, window.onError);
+    window.remote.save(new FormData(imageUploadForm), window.photos.showSuccess,
+        window.photos.showErrorMessage);
   };
 
-  var submitClickHandler = function (evt) {
+  var submitButtonClickHandler = function (evt) {
     evt.preventDefault();
-    if (imgUploadForm.reportValidity()) {
+    if (imageUploadForm.reportValidity()) {
       sendFormData();
-      resetImgUploadPopup();
-      closeImgPopup();
+      resetImageUploadPopup();
+      closeImagePopup();
     }
   };
 
-  submitButton.addEventListener('click', submitClickHandler);
+  submitButton.addEventListener('click', submitButtonClickHandler);
 })();

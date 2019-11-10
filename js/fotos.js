@@ -1,22 +1,41 @@
-// fotos. js
+// photos. js
 'use strict';
 
 (function () {
-  var FOTOS_COUNT = 25;
-  var RANDOM_FOTOS_COUNT = 10;
+  var PHOTOS_COUNT = 25;
+  var RANDOM_PHOTOS_COUNT = 10;
 
-  window.userFotos = [];
   var userPictures = null;
 
-  // нефильтрованные данные с сервера
-  window.data = null;
+  window.photos = {
+    // нефильтрованные данные с сервера
+    data: null,
+    userPhotos: [],
+    showSuccess: function () {
+      var successSection = successTemplate.cloneNode(true);
+      document.body.insertAdjacentElement('afterbegin', successSection);
+      document.addEventListener('click', closeSuccessSection);
+      document.addEventListener('keydown', closeSuccessSectionEscHandler);
+    },
+    showErrorMessage: function (message) {
+      showError(message);
+    },
+    createCommentElement: function (comment) {
+      var commentElement = commentTemplate.cloneNode(true);
+      commentElement.querySelector('.social__picture').src = comment.avatar;
+      commentElement.querySelector('.social__picture').alt = comment.name;
+      commentElement.querySelector('.social__text').textContent = comment.message;
+      return commentElement;
+    }
+  };
+
   // блок с картинками
   var picturesBlock = null;
 
-  var removeFotos = function () {
+  var removePhotos = function () {
     if (!(userPictures === null)) {
       userPictures.forEach(function (picture) {
-        picture.removeEventListener('click', selectPicture);
+        picture.removeEventListener('click', selectPictureClickHandler);
       });
       while (picturesBlock) {
         var picture = picturesBlock.querySelector('.picture');
@@ -29,104 +48,89 @@
     }
   };
 
-  window.filter.onPopularFilter = window.debounce(function () {
-    removeFotos();
+  window.filter.selectPopularPhotos = window.debounce(function () {
+    removePhotos();
     // просто показываем нефильтрованные картинки
-    loadFotosData(window.data);
+    loadPhotosData(window.photos.data);
   });
 
-  window.filter.onRandomFilter = window.debounce(function () {
-    removeFotos();
-    // получим массив RANDOM_FOTOS_COUNT случайных значений индексов
+  window.filter.selectRandomPhotos = window.debounce(function () {
+    removePhotos();
+    // получим массив RANDOM_PHOTOS_COUNT случайных значений индексов
     var indexes = [];
-    while (indexes.length < RANDOM_FOTOS_COUNT) {
-      var ind = window.getRandomIndex(window.data.length);
+    while (indexes.length < RANDOM_PHOTOS_COUNT) {
+      var ind = window.utils.getRandomIndex(window.photos.data.length);
       if (indexes.indexOf(ind) < 0) {
         indexes.push(ind);
       }
     }
     // покажем картинки с этими индексами
-    var data = window.data.filter(function (pict, index) {
-      if (indexes.indexOf(index) < 0) {
-        return false;
-      }
-      return true;
+    var data = window.photos.data.filter(function (pict, index) {
+      return indexes.indexOf(index) >= 0;
     });
-    loadFotosData(data);
+    loadPhotosData(data);
   });
 
-  var pictureComparator = function (left, right) {
+  var comparePictureComments = function (left, right) {
     if (right.comments.length - left.comments.length === 0) {
       return right.likes - left.likes;
     }
     return right.comments.length - left.comments.length;
   };
 
-  window.filter.onDiscussFilter = window.debounce(function () {
-    removeFotos();
-    var data = window.data.slice();
-    data.sort(pictureComparator);
-    loadFotosData(data);
+  window.filter.selectDiscussedPhotos = window.debounce(function () {
+    removePhotos();
+    var data = window.photos.data.slice();
+    data.sort(comparePictureComments);
+    loadPhotosData(data);
   });
 
-  var successTempl = document.querySelector('#success')
+  var successTemplate = document.querySelector('#success')
   .content
   .querySelector('.success');
 
-  // показываем окно после успешной загрузки фотографий с сервера
-  window.showSuccess = function () {
-    var successSection = successTempl.cloneNode(true);
-    document.body.insertAdjacentElement('afterbegin', successSection);
-    document.addEventListener('click', closeSuccessSection);
-    document.addEventListener('keydown', closeSuccessSectionOnEsc);
-  };
-
-  var onLoad = function (data) {
-    window.data = data;
-    loadFotosData(data);
+  var receivePhotosData = function (data) {
+    window.photos.data = data;
+    loadPhotosData(data);
     document.querySelector('.img-filters').classList.remove('img-filters--inactive');
   };
 
-  var errorTempl = document.querySelector('#error')
+  var errorTemplate = document.querySelector('#error')
   .content
   .querySelector('.error');
 
-  var closeErrorSection = function (evt) {
+  var closeErrorSectionHandler = function (evt) {
     var error = document.querySelector('.error');
     var errorButton = document.querySelector('.error__buttons:last-child');
     if (evt.target === error ||
-      (evt.target === errorButton) || (evt.keyCode === window.DOM_VK.esc)) {
+      (evt.target === errorButton) || (evt.keyCode === window.DOM_VK.ESC)) {
       error.remove();
-      document.removeEventListener('click', closeErrorSection);
+      document.removeEventListener('click', closeErrorSectionHandler);
       evt.stopPropagation();
     }
   };
 
-  var closeErrorSectionOnEsc = function (evt) {
-    if (evt.keyCode === window.DOM_VK.esc) {
-      closeErrorSection(evt);
-      document.removeEventListener('keydown', closeErrorSectionOnEsc);
+  var closeErrorSectionEscHandler = function (evt) {
+    if (evt.keyCode === window.DOM_VK.ESC) {
+      closeErrorSectionHandler(evt);
+      document.removeEventListener('keydown', closeErrorSectionEscHandler);
     }
   };
 
   // показываем окно с ошибкой загрузки с сервера
   var showError = function (message) {
-    var errorSection = errorTempl.cloneNode(true);
+    var errorSection = errorTemplate.cloneNode(true);
     errorSection.querySelector('.error__title').textContent = 'Ошибка загрузки файла: ' + message;
     document.body.insertAdjacentElement('afterbegin', errorSection);
-    document.addEventListener('click', closeErrorSection);
-    document.addEventListener('keydown', closeErrorSectionOnEsc);
-  };
-
-  window.onError = function (message) {
-    showError(message);
+    document.addEventListener('click', closeErrorSectionHandler);
+    document.addEventListener('keydown', closeErrorSectionEscHandler);
   };
 
   var closeSuccessSection = function (evt) {
     var success = document.querySelector('.success');
     var successButton = document.querySelector('.success__button');
     if (evt.target === success ||
-      (evt.target === successButton) || (evt.keyCode === window.DOM_VK.esc)) {
+      (evt.target === successButton) || (evt.keyCode === window.DOM_VK.ESC)) {
       if (!(success === null)) {
         success.remove();
       }
@@ -139,96 +143,83 @@
     }
   };
 
-  var closeSuccessSectionOnEsc = function (evt) {
-    if (evt.keyCode === window.DOM_VK.esc) {
+  var closeSuccessSectionEscHandler = function (evt) {
+    if (evt.keyCode === window.DOM_VK.ESC) {
       closeSuccessSection(evt);
-      document.removeEventListener('keydown', closeSuccessSectionOnEsc);
+      document.removeEventListener('keydown', closeSuccessSectionEscHandler);
     }
   };
 
-  var commentTempl = document.querySelector('#social__comment').content.querySelector('.social__comment');
+  var commentTemplate = document.querySelector('#social__comment').content.querySelector('.social__comment');
 
-  var createComment = function (comment) {
-    var commentElement = commentTempl.cloneNode(true);
-    commentElement.querySelector('.social__picture').src = comment.avatar;
-    commentElement.querySelector('.social__picture').alt = comment.name;
-    commentElement.querySelector('.social__text').textContent = comment.message;
-    return commentElement;
-  };
-
-  var pictureTempl = document.querySelector('#picture')
+  var pictureTemplate = document.querySelector('#picture')
     .content
     .querySelector('.picture');
 
-  var createPicture = function (foto) {
-    var pictureElem = pictureTempl.cloneNode(true);
-    pictureElem.querySelector('.picture__img').src = foto.url;
-    pictureElem.querySelector('.picture__likes').textContent = foto.likes;
-    pictureElem.querySelector('.picture__comments').textContent = foto.maxComments;
-    return pictureElem;
+  var createPicture = function (photo) {
+    var pictureElement = pictureTemplate.cloneNode(true);
+    pictureElement.querySelector('.picture__img').src = photo.url;
+    pictureElement.querySelector('.picture__likes').textContent = photo.likes;
+    pictureElement.querySelector('.picture__comments').textContent = photo.maxComments;
+    return pictureElement;
   };
 
   // src - фотография, которую выбрали для просмотра
-  // возвращаем индекс этой фотографии в массиве userFotos
-  var selectFoto = function (src) {
-    for (var i = 0; i < window.userFotos.length; i++) {
-      if (src.indexOf(window.userFotos[i].url, 0) > -1) {
-        return i;
+  // возвращаем индекс этой фотографии в массиве userPhotos
+  var selectPhoto = function (src) {
+    var index = -1;
+    window.photos.userPhotos.some(function (photo, i) {
+      if (src.indexOf(photo.url, 0) > -1) {
+        index = i;
+        return true;
       }
-    }
-    return -1;
+      return false;
+    });
+    return index;
   };
 
   // обработчик клика мышки на фотографии
-  var selectPicture = function (evt) {
-    var index = selectFoto(evt.target.src);
+  var selectPictureClickHandler = function (evt) {
+    var index = selectPhoto(evt.target.src);
     if (index > -1) {
-      window.openBigPicturePopup(index);
+      window.picture.openBigPicturePopup(index);
     }
   };
 
   // обработчик нажатия клавиши Enter
-  var onPopupPressEnter = function (evt) {
-    if (evt.keyCode === window.DOM_VK.enter) {
+  var popupEnterHandler = function (evt) {
+    if (evt.keyCode === window.DOM_VK.ENTER) {
       evt.preventDefault();
-      var index = -1;
-      for (var i = 0; i < userPictures.length; i++) {
-        if (userPictures[i] === document.activeElement) {
-          index = selectFoto(userPictures[i].firstElementChild.src);
-          break;
-        }
-      }
+      var picturesArray = Array.from(userPictures);
+      var index = selectPhoto(userPictures[picturesArray.indexOf(document.activeElement)].firstElementChild.src);
       if (index >= 0) {
-        window.openBigPicturePopup(index);
+        window.picture.openBigPicturePopup(index);
       }
     }
   };
 
-  document.addEventListener('keydown', onPopupPressEnter);
+  document.addEventListener('keydown', popupEnterHandler);
 
   // эагружаем фотографии, полученные с сервера, на сайт
-  var loadFotosData = function (data) {
-    window.userFotos = [];
-    for (var i = 0; i < data.length; i++) {
-      if (i === FOTOS_COUNT) {
-        break;
-      }
-      var fotoInfo = {};
-      fotoInfo.url = data[i].url;
-      fotoInfo.description = data[i].description;
-      fotoInfo.likes = data[i].likes;
-      fotoInfo.comments = [];
-      fotoInfo.maxComments = data[i].comments.length;
+  var loadPhotosData = function (data) {
+    window.photos.userPhotos = [];
+    var photoData = data.slice(0, PHOTOS_COUNT - 1);
+    photoData.forEach(function (photo) {
+      var photoInfo = {};
+      photoInfo.url = photo.url;
+      photoInfo.dESCription = photo.dESCription;
+      photoInfo.likes = photo.likes;
+      photoInfo.comments = [];
+      photoInfo.maxComments = photo.comments.length;
       // создадим комментарии
-      for (var j = 0; j < data[i].comments.length; j++) {
-        fotoInfo.comments[j] = createComment(data[i].comments[j]);
-      }
-      window.userFotos[i] = fotoInfo;
-    }
-
+      photo.comments.forEach(function (comment) {
+        photoInfo.comments.push(window.photos.createCommentElement(comment));
+      });
+      window.photos.userPhotos.push(photoInfo);
+    });
     var fragment = document.createDocumentFragment();
-    window.userFotos.forEach(function (foto) {
-      fragment.appendChild(createPicture(foto));
+    window.photos.userPhotos.forEach(function (photo) {
+      fragment.appendChild(createPicture(photo));
     });
 
     picturesBlock = document.querySelector('.pictures');
@@ -236,11 +227,10 @@
     userPictures = document.querySelectorAll('.picture');
 
     userPictures.forEach(function (picture) {
-      picture.addEventListener('click', selectPicture);
+      picture.addEventListener('click', selectPictureClickHandler);
     });
   };
 
   // загрузка фотографий с сервера
-  window.load(onLoad, window.onError);
+  window.remote.load(receivePhotosData, window.photos.showErrorMessage);
 })();
-

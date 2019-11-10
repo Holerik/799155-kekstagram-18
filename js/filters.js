@@ -4,66 +4,66 @@
   window.filter = null;
 
   var filter = {
-    onPopularFilter: function () {},
-    onRandomFilter: function () {},
-    onDiscussFilter: function () {}
+    selectPopularPhotos: function () {},
+    selectRandomPhotos: function () {},
+    selectDiscussedPhotos: function () {}
   };
 
-  var popButton = document.querySelector('#filter-popular');
-  var randButton = document.querySelector('#filter-random');
-  var discButton = document.querySelector('#filter-discussed');
+  var popularFilterButton = document.querySelector('#filter-popular');
+  var randomFilterButton = document.querySelector('#filter-random');
+  var discussedFilterButton = document.querySelector('#filter-discussed');
 
-  var pressPopButton = function () {
-    if (randButton.classList.contains('img-filters__button--active')) {
-      randButton.classList.remove('img-filters__button--active');
+  var popularFilterButtonClickHandler = function () {
+    if (randomFilterButton.classList.contains('img-filters__button--active')) {
+      randomFilterButton.classList.remove('img-filters__button--active');
     }
-    if (discButton.classList.contains('img-filters__button--active')) {
-      discButton.classList.remove('img-filters__button--active');
+    if (discussedFilterButton.classList.contains('img-filters__button--active')) {
+      discussedFilterButton.classList.remove('img-filters__button--active');
     }
-    popButton.classList.add('img-filters__button--active');
-    window.filter.onPopularFilter();
+    popularFilterButton.classList.add('img-filters__button--active');
+    window.filter.selectPopularPhotos();
   };
 
-  popButton.addEventListener('click', pressPopButton);
-  popButton.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.DOM_VK.enter) {
-      pressPopButton();
+  popularFilterButton.addEventListener('click', popularFilterButtonClickHandler);
+  popularFilterButton.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === window.DOM_VK.ENTER) {
+      popularFilterButtonClickHandler();
     }
   });
 
-  var pressRandButton = function () {
-    if (popButton.classList.contains('img-filters__button--active')) {
-      popButton.classList.remove('img-filters__button--active');
+  var randomFilterButtonClickHandler = function () {
+    if (popularFilterButton.classList.contains('img-filters__button--active')) {
+      popularFilterButton.classList.remove('img-filters__button--active');
     }
-    if (discButton.classList.contains('img-filters__button--active')) {
-      discButton.classList.remove('img-filters__button--active');
+    if (discussedFilterButton.classList.contains('img-filters__button--active')) {
+      discussedFilterButton.classList.remove('img-filters__button--active');
     }
-    randButton.classList.add('img-filters__button--active');
-    window.filter.onRandomFilter();
+    randomFilterButton.classList.add('img-filters__button--active');
+    window.filter.selectRandomPhotos();
   };
 
-  randButton.addEventListener('click', pressRandButton);
-  randButton.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.DOM_VK.enter) {
-      pressRandButton();
+  randomFilterButton.addEventListener('click', randomFilterButtonClickHandler);
+  randomFilterButton.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === window.DOM_VK.ENTER) {
+      randomFilterButtonClickHandler();
     }
   });
 
-  var pressDiscButton = function () {
-    if (popButton.classList.contains('img-filters__button--active')) {
-      popButton.classList.remove('img-filters__button--active');
+  var discussedFilterButtonClickHandler = function () {
+    if (popularFilterButton.classList.contains('img-filters__button--active')) {
+      popularFilterButton.classList.remove('img-filters__button--active');
     }
-    if (randButton.classList.contains('img-filters__button--active')) {
-      randButton.classList.remove('img-filters__button--active');
+    if (randomFilterButton.classList.contains('img-filters__button--active')) {
+      randomFilterButton.classList.remove('img-filters__button--active');
     }
-    discButton.classList.add('img-filters__button--active');
-    window.filter.onDiscussFilter();
+    discussedFilterButton.classList.add('img-filters__button--active');
+    window.filter.selectDiscussedPhotos();
   };
 
-  discButton.addEventListener('click', pressDiscButton);
-  discButton.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.DOM_VK.enter) {
-      pressDiscButton();
+  discussedFilterButton.addEventListener('click', discussedFilterButtonClickHandler);
+  discussedFilterButton.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === window.DOM_VK.ENTER) {
+      discussedFilterButtonClickHandler();
     }
   });
 
