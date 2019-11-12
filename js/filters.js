@@ -26,7 +26,7 @@
 
   popularFilterButton.addEventListener('click', popularFilterButtonClickHandler);
   popularFilterButton.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.DOM_VK.ENTER) {
+    if (evt.keyCode === window.utils.DOM_VK.ENTER) {
       popularFilterButtonClickHandler();
     }
   });
@@ -44,7 +44,7 @@
 
   randomFilterButton.addEventListener('click', randomFilterButtonClickHandler);
   randomFilterButton.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.DOM_VK.ENTER) {
+    if (evt.keyCode === window.utils.DOM_VK.ENTER) {
       randomFilterButtonClickHandler();
     }
   });
@@ -62,7 +62,7 @@
 
   discussedFilterButton.addEventListener('click', discussedFilterButtonClickHandler);
   discussedFilterButton.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.DOM_VK.ENTER) {
+    if (evt.keyCode === window.utils.DOM_VK.ENTER) {
       discussedFilterButtonClickHandler();
     }
   });

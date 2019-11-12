@@ -15,7 +15,7 @@
   window.upload = {
     // обработчик нажатия клавиши Esc
     popupEscHandler: function (evt) {
-      if (evt.keyCode === window.DOM_VK.ESC) {
+      if (evt.keyCode === window.utils.DOM_VK.ESC) {
         if (hashtagsInput === document.activeElement) {
           return;
         }
@@ -43,6 +43,7 @@
   var resetImageUploadPopup = function () {
     var preview = imageUploadPopup.querySelector('.img-upload__preview');
     preview.style.filter = '';
+    window.effects.resetEffects();
     if (!(window.effects.currentEffect === 'none')) {
     // удалим текущий фильтр из списка классов
       var effectClass = 'effects__preview--' + window.effects.currentEffect;
@@ -81,7 +82,7 @@
   });
 
   uploadControl.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.DOM_VK.ENTER) {
+    if (evt.keyCode === window.utils.DOM_VK.ENTER) {
       uploadFile.click();
     }
   });

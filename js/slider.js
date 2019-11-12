@@ -3,7 +3,6 @@
 
 (function () {
 
-  var MAX_SLIDER_VALUE = 100;
 
   // даные для инициализации слайдера
   var sliderData = {
@@ -14,18 +13,10 @@
   };
 
   window.slider = {
+    MAX_SLIDER_VALUE: 100,
     initSlider: function (callback) {
       callbackFunction = callback;
       callbackFunction(sliderData);
-      sliderData.pinObject.addEventListener('mouseup', mouseUpHandler);
-      sliderData.pinObject.addEventListener('mousedown', function (evt) {
-        evt.preventDefault();
-      });
-    },
-    resetSlider: function () {
-      sliderData.pinObject.style.left = 0;
-      sliderData.depthObject.style.width = 0;
-      sliderData.valueObject.value = 0;
     },
     setSlider: function (style) {
       setSliderPosition(style.value);
@@ -33,13 +24,15 @@
   };
 
   var callbackFunction = null;
+  var mouseDown = false;
+  var dragMouse = false;
 
   // получить положение ползунка
   var getPinPosition = function (evt) {
     var rect = sliderData.sliderObject.getBoundingClientRect();
-    var pos = MAX_SLIDER_VALUE * (evt.clientX - rect.left) / rect.width;
-    if (pos > MAX_SLIDER_VALUE) {
-      pos = MAX_SLIDER_VALUE;
+    var pos = window.slider.MAX_SLIDER_VALUE * (evt.clientX - rect.left) / rect.width;
+    if (pos > window.slider.MAX_SLIDER_VALUE) {
+      pos = window.slider.MAX_SLIDER_VALUE;
     } else if (pos < 0) {
       pos = 0;
     }
@@ -47,6 +40,9 @@
   };
 
   var testMousePos = function (evt) {
+    if (mouseDown) {
+      return true;
+    }
     var rect = sliderData.sliderObject.getBoundingClientRect();
     if (!(evt.which === 1) || (evt.clientY < rect.top) ||
         (evt.clientY > rect.bottom) ||
@@ -75,25 +71,40 @@
     }
   };
 
-  var mouseUpHandler = function (evt) {
-    evt.preventDefault();
-    document.removeEventListener('mousemove', mouseMoveHandler);
-    sliderData.pinObject.removeEventListener('mouseup', mouseUpHandler);
+  var mouseUpHandler = function (upEvent) {
+    upEvent.preventDefault();
+    if (mouseDown) {
+      document.removeEventListener('mousemove', mouseMoveHandler);
+      document.removeEventListener('mouseup', mouseUpHandler);
+    }
+    if (dragMouse) {
+      var preventDefaultClickHandler = function (evt) {
+        evt.preventDefault();
+        document.removeEventListener('click', preventDefaultClickHandler);
+      };
+      document.addEventListener('click', preventDefaultClickHandler);
+    }
+    mouseDown = false;
+    dragMouse = false;
   };
 
   var mouseDownHandler = function (evt) {
     if (testMousePos(evt)) {
       evt.preventDefault();
       document.addEventListener('mousemove', mouseMoveHandler);
-      sliderData.pinObject.addEventListener('mouseup', mouseUpHandler);
+      document.addEventListener('mouseup', mouseUpHandler);
+      mouseDown = true;
     }
   };
 
   document.addEventListener('mousedown', mouseDownHandler);
 
   var mouseMoveHandler = function (evt) {
-    evt.preventDefault();
-    setPinPosition(evt);
+    if (mouseDown) {
+      evt.preventDefault();
+      setPinPosition(evt);
+      dragMouse = true;
+    }
   };
 
   document.addEventListener('mousemove', mouseMoveHandler);

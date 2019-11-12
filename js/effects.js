@@ -8,14 +8,18 @@
   var effectStyles = [
     {
       name: 'none',
-      filter: ''
+      filter: '',
+      min: 0,
+      max: 0,
+      value: 0,
+      suffix: ''
     },
     {
       name: 'chrome',
       filter: 'grayscale',
       min: 0,
       max: 1.0,
-      value: 0,
+      value: 100,
       suffix: ''
     },
     {
@@ -23,7 +27,7 @@
       filter: 'sepia',
       min: 0,
       max: 1.0,
-      value: 0,
+      value: 100,
       suffix: ''
     },
     {
@@ -31,7 +35,7 @@
       filter: 'invert',
       min: 0,
       max: 100,
-      value: 0,
+      value: 100,
       suffix: '%'
     },
     {
@@ -39,7 +43,7 @@
       filter: 'blur',
       min: 0,
       max: 3,
-      value: 0,
+      value: 100,
       suffix: 'px'
     },
     {
@@ -47,14 +51,19 @@
       filter: 'brightness',
       min: 1.0,
       max: 3.0,
-      value: 1.0,
+      value: 100,
       suffix: ''
     }
   ];
 
   window.effects = {
   // текущий эффект
-    currentEffect: 'none'
+    currentEffect: 'none',
+    resetEffects: function () {
+      effectStyles.forEach(function (style) {
+        style.value = 100;
+      });
+    }
   };
 
   // показ окна редактирования изображения
@@ -81,7 +90,8 @@
   sliderInfo.valueObject.style.position = 'absolute';
 
   var setFilterValue = function (preview, effectStyle) {
-    var filterStep = (effectStyle.max - effectStyle.min) * effectStyle.value / 100;
+    var filterStep = (effectStyle.max - effectStyle.min) *
+        effectStyle.value / window.slider.MAX_SLIDER_VALUE;
     var filterValue = effectStyle.min + filterStep;
     if (effectStyle.max > 1) {
       filterValue = Math.ceil(filterValue);
@@ -151,8 +161,6 @@
       }
     }
     if (effectStyle.name === 'none') {
-      // устанавливаем начальное значение ползунка
-      window.slider.resetSlider();
       // скрываем слайдер
       if (!slider.classList.contains('hidden')) {
         slider.classList.add('hidden');

@@ -3,11 +3,11 @@
 
 (function () {
   var TIMEOUT_MS = 10000;
-  var SERVER_SATUS_OK = 200;
+  var SERVER_STATUS_OK = 200;
 
   var urlData = {
-    to: 'https://js.dump.academy/kekstagram',
-    from: 'https://js.dump.academy/kekstagram/data'
+    TO: 'https://js.dump.academy/kekstagram',
+    FROM: 'https://js.dump.academy/kekstagram/data'
   };
 
   window.remote = {
@@ -16,7 +16,7 @@
       xhr.responseType = 'json';
       xhr.timeout = TIMEOUT_MS;
       xhr.addEventListener('load', function () {
-        if (xhr.status === SERVER_SATUS_OK) {
+        if (xhr.status === SERVER_STATUS_OK) {
           receivePhotosData(xhr.response);
         } else {
           showErrorMessage('Статус ответа:' + xhr.status + ' ' + xhr.statusText);
@@ -30,7 +30,7 @@
         showErrorMessage('Запрос не успел выполниться за ' + xhr.timeout + ' мс');
       });
 
-      xhr.open('GET', urlData.from);
+      xhr.open('GET', urlData.FROM);
       xhr.send();
     },
 
@@ -38,7 +38,7 @@
       var xhr = new XMLHttpRequest();
       xhr.responseType = 'json';
       xhr.addEventListener('load', function () {
-        if (xhr.status === SERVER_SATUS_OK) {
+        if (xhr.status === SERVER_STATUS_OK) {
           showSuccessMessage(xhr.response);
         } else {
           showErrorMessage('Статус ответа:' + xhr.status + ' ' + xhr.statusText);
@@ -47,7 +47,7 @@
       xhr.addEventListener('error', function () {
         showErrorMessage('Произошла ошибка соединения');
       });
-      xhr.open('POST', urlData.to);
+      xhr.open('POST', urlData.TO);
       xhr.send(data);
       return xhr.readyState;
     }

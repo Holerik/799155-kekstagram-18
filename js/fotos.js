@@ -14,7 +14,7 @@
     showSuccess: function () {
       var successSection = successTemplate.cloneNode(true);
       document.body.insertAdjacentElement('afterbegin', successSection);
-      document.addEventListener('click', closeSuccessSection);
+      document.addEventListener('click', closeSuccessSectionClickHandler);
       document.addEventListener('keydown', closeSuccessSectionEscHandler);
     },
     showErrorMessage: function (message) {
@@ -103,7 +103,7 @@
     var error = document.querySelector('.error');
     var errorButton = document.querySelector('.error__buttons:last-child');
     if (evt.target === error ||
-      (evt.target === errorButton) || (evt.keyCode === window.DOM_VK.ESC)) {
+      (evt.target === errorButton) || (evt.keyCode === window.utils.DOM_VK.ESC)) {
       error.remove();
       document.removeEventListener('click', closeErrorSectionHandler);
       evt.stopPropagation();
@@ -111,7 +111,7 @@
   };
 
   var closeErrorSectionEscHandler = function (evt) {
-    if (evt.keyCode === window.DOM_VK.ESC) {
+    if (evt.keyCode === window.utils.DOM_VK.ESC) {
       closeErrorSectionHandler(evt);
       document.removeEventListener('keydown', closeErrorSectionEscHandler);
     }
@@ -126,15 +126,15 @@
     document.addEventListener('keydown', closeErrorSectionEscHandler);
   };
 
-  var closeSuccessSection = function (evt) {
+  var closeSuccessSectionClickHandler = function (evt) {
     var success = document.querySelector('.success');
     var successButton = document.querySelector('.success__button');
     if (evt.target === success ||
-      (evt.target === successButton) || (evt.keyCode === window.DOM_VK.ESC)) {
+      (evt.target === successButton) || (evt.keyCode === window.utils.DOM_VK.ESC)) {
       if (!(success === null)) {
         success.remove();
       }
-      document.removeEventListener('click', closeSuccessSection);
+      document.removeEventListener('click', closeSuccessSectionClickHandler);
       evt.stopPropagation();
     }
     var filters = document.querySelector('.img-filters');
@@ -144,8 +144,8 @@
   };
 
   var closeSuccessSectionEscHandler = function (evt) {
-    if (evt.keyCode === window.DOM_VK.ESC) {
-      closeSuccessSection(evt);
+    if (evt.keyCode === window.utils.DOM_VK.ESC) {
+      closeSuccessSectionClickHandler(evt);
       document.removeEventListener('keydown', closeSuccessSectionEscHandler);
     }
   };
@@ -188,10 +188,11 @@
 
   // обработчик нажатия клавиши Enter
   var popupEnterHandler = function (evt) {
-    if (evt.keyCode === window.DOM_VK.ENTER) {
+    if (evt.keyCode === window.utils.DOM_VK.ENTER) {
       evt.preventDefault();
       var picturesArray = Array.from(userPictures);
-      var index = selectPhoto(userPictures[picturesArray.indexOf(document.activeElement)].firstElementChild.src);
+      var picture = userPictures[picturesArray.indexOf(document.activeElement)];
+      var index = selectPhoto(picture.firstElementChild.src);
       if (index >= 0) {
         window.picture.openBigPicturePopup(index);
       }

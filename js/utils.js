@@ -3,11 +3,6 @@
 
 (function () {
 
-  window.DOM_VK = {
-    ESC: 0x1B,
-    ENTER: 0x0D
-  };
-
   var doAction = function (evt, action, process) {
     if (process) {
       action(evt);
@@ -17,13 +12,17 @@
   };
 
   window.utils = {
+    DOM_VK: {
+      ESC: 0x1B,
+      ENTER: 0x0D
+    },
     isEscPressed: function (evt, action, process) {
-      if (evt.keyCode === window.DOM_VK.esc) {
+      if (evt.keyCode === this.DOM_VK.esc) {
         doAction(evt, action, process);
       }
     },
     isEnterPressed: function (evt, action, process) {
-      if (evt.keyCode === window.DOM_VK.enter) {
+      if (evt.keyCode === this.DOM_VK.enter) {
         doAction(evt, action, process);
       }
     },
