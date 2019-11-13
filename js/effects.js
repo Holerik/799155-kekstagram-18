@@ -19,7 +19,7 @@
       filter: 'grayscale',
       min: 0,
       max: 1.0,
-      value: 100,
+      value: window.slider.MAX_SLIDER_VALUE,
       suffix: ''
     },
     {
@@ -27,7 +27,7 @@
       filter: 'sepia',
       min: 0,
       max: 1.0,
-      value: 100,
+      value: window.slider.MAX_SLIDER_VALUE,
       suffix: ''
     },
     {
@@ -35,7 +35,7 @@
       filter: 'invert',
       min: 0,
       max: 100,
-      value: 100,
+      value: window.slider.MAX_SLIDER_VALUE,
       suffix: '%'
     },
     {
@@ -43,7 +43,7 @@
       filter: 'blur',
       min: 0,
       max: 3,
-      value: 100,
+      value: window.slider.MAX_SLIDER_VALUE,
       suffix: 'px'
     },
     {
@@ -51,7 +51,7 @@
       filter: 'brightness',
       min: 1.0,
       max: 3.0,
-      value: 100,
+      value: window.slider.MAX_SLIDER_VALUE,
       suffix: ''
     }
   ];
@@ -61,7 +61,7 @@
     currentEffect: 'none',
     resetEffects: function () {
       effectStyles.forEach(function (style) {
-        style.value = 100;
+        style.value = window.slider.MAX_SLIDER_VALUE;
       });
     }
   };
