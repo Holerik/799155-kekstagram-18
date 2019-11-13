@@ -4,6 +4,13 @@
 (function () {
   var SCALE_STEP = 25;
   var MAX_SCALE_VALUE = 100;
+  var FILTERS_MIN_VALUE = 0;
+  var CHROM_FILTER_MAX_VALUE = 1.0;
+  var SEPIA_FILTER_MAX_VALUE = 1.0;
+  var MARVIN_FILTER_MAX_VALUE = 100;
+  var PHOBOS_FILTER_MAX_VALUE = 3;
+  var HEAT_FILTER_MIN_VALUE = 1.0;
+  var HEAT_FILTER_MAX_VALUE = 3.0;
 
   var effectStyles = [
     {
@@ -17,40 +24,40 @@
     {
       name: 'chrome',
       filter: 'grayscale',
-      min: 0,
-      max: 1.0,
+      min: FILTERS_MIN_VALUE,
+      max: CHROM_FILTER_MAX_VALUE,
       value: window.slider.MAX_SLIDER_VALUE,
       suffix: ''
     },
     {
       name: 'sepia',
       filter: 'sepia',
-      min: 0,
-      max: 1.0,
+      min: FILTERS_MIN_VALUE,
+      max: SEPIA_FILTER_MAX_VALUE,
       value: window.slider.MAX_SLIDER_VALUE,
       suffix: ''
     },
     {
       name: 'marvin',
       filter: 'invert',
-      min: 0,
-      max: 100,
+      min: FILTERS_MIN_VALUE,
+      max: MARVIN_FILTER_MAX_VALUE,
       value: window.slider.MAX_SLIDER_VALUE,
       suffix: '%'
     },
     {
       name: 'phobos',
       filter: 'blur',
-      min: 0,
-      max: 3,
+      min: FILTERS_MIN_VALUE,
+      max: PHOBOS_FILTER_MAX_VALUE,
       value: window.slider.MAX_SLIDER_VALUE,
       suffix: 'px'
     },
     {
       name: 'heat',
       filter: 'brightness',
-      min: 1.0,
-      max: 3.0,
+      min: HEAT_FILTER_MIN_VALUE,
+      max: HEAT_FILTER_MAX_VALUE,
       value: window.slider.MAX_SLIDER_VALUE,
       suffix: ''
     }
@@ -93,9 +100,6 @@
     var filterStep = (effectStyle.max - effectStyle.min) *
         effectStyle.value / window.slider.MAX_SLIDER_VALUE;
     var filterValue = effectStyle.min + filterStep;
-    if (effectStyle.max > 1) {
-      filterValue = Math.ceil(filterValue);
-    }
     // откорректируем фильтр в CSS
     preview.style.filter = effectStyle.filter +
     '(' + filterValue.toString() + effectStyle.suffix + ')';
