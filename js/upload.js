@@ -44,6 +44,7 @@
     var preview = imageUploadPopup.querySelector('.img-upload__preview');
     preview.style.filter = '';
     window.effects.resetEffects();
+    window.effects.resetScale();
     if (!(window.effects.currentEffect === 'none')) {
     // удалим текущий фильтр из списка классов
       var effectClass = 'effects__preview--' + window.effects.currentEffect;

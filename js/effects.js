@@ -16,9 +16,9 @@
     {
       name: 'none',
       filter: '',
-      min: 0,
-      max: 0,
-      value: 0,
+      min: FILTERS_MIN_VALUE,
+      max: FILTERS_MIN_VALUE,
+      value: FILTERS_MIN_VALUE,
       suffix: ''
     },
     {
@@ -70,6 +70,9 @@
       effectStyles.forEach(function (style) {
         style.value = window.slider.MAX_SLIDER_VALUE;
       });
+    },
+    resetScale: function () {
+      scaleControlValue.value = MAX_SCALE_VALUE.toString() + '%';
     }
   };
 
@@ -79,6 +82,7 @@
   // кнопки масштабирования
   var smallerScaleButton = imageUploadPopup.querySelector('.scale__control--smaller');
   var biggerScaleButton = imageUploadPopup.querySelector('.scale__control--bigger');
+  var scaleControlValue = imageUploadPopup.querySelector('.scale__control--value');
 
   // убираем слайдер
   slider.classList.add('hidden');
@@ -179,6 +183,8 @@
       effectClass = 'effects__preview--' + effect;
       preview.classList.add(effectClass);
       // добавляем фильтр в CSS
+      // при изменении фильтра сбросим уровень расыщенности
+      effectStyle.value = window.slider.MAX_SLIDER_VALUE;
       setFilterValue(preview, effectStyle);
     }
     return effect;
@@ -196,8 +202,7 @@
   // обработка изменения масштаба
   //
   var scaleHandler = function (evt) {
-    var valueElement = imageUploadPopup.querySelector('.scale__control--value');
-    var scale = parseInt(valueElement.value.slice(0, valueElement.value.length - 1), 10);
+    var scale = parseInt(scaleControlValue.value.slice(0, scaleControlValue.value.length - 1), 10);
     if (evt.target === smallerScaleButton) {
       scale -= SCALE_STEP;
       if (scale < SCALE_STEP) {
@@ -209,7 +214,7 @@
         scale = MAX_SCALE_VALUE;
       }
     }
-    valueElement.value = scale.toString() + '%';
+    scaleControlValue.value = scale.toString() + '%';
     var formattedScale = scale / MAX_SCALE_VALUE;
     imageUploadPopup.querySelector('.img-upload__preview').style.transform = 'scale(' + formattedScale.toString() + ')';
   };

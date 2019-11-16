@@ -5,7 +5,7 @@
   var TIMEOUT_MS = 10000;
   var SERVER_STATUS_OK = 200;
 
-  var urlData = {
+  var URL_DATA = {
     TO: 'https://js.dump.academy/kekstagram',
     FROM: 'https://js.dump.academy/kekstagram/data'
   };
@@ -30,7 +30,7 @@
         showErrorMessage('Запрос не успел выполниться за ' + xhr.timeout + ' мс');
       });
 
-      xhr.open('GET', urlData.FROM);
+      xhr.open('GET', URL_DATA.FROM);
       xhr.send();
     },
 
@@ -47,7 +47,7 @@
       xhr.addEventListener('error', function () {
         showErrorMessage('Произошла ошибка соединения');
       });
-      xhr.open('POST', urlData.TO);
+      xhr.open('POST', URL_DATA.TO);
       xhr.send(data);
       return xhr.readyState;
     }
