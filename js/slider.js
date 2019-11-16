@@ -54,6 +54,7 @@
 
   var setSliderPosition = function (position) {
     sliderData.valueObject.value = position;
+    sliderData.valueObject.setAttribute('value', position.toString());
     var pos = position.toString() + '%';
     sliderData.pinObject.style.left = pos;
     sliderData.depthObject.style.width = pos;

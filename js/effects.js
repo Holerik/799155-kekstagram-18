@@ -184,6 +184,7 @@
       preview.classList.add(effectClass);
       // добавляем фильтр в CSS
       // при изменении фильтра сбросим уровень расыщенности
+      sliderInfo.valueObject.setAttribute('value', window.slider.MAX_SLIDER_VALUE.toString());
       effectStyle.value = window.slider.MAX_SLIDER_VALUE;
       setFilterValue(preview, effectStyle);
     }
@@ -215,6 +216,7 @@
       }
     }
     scaleControlValue.value = scale.toString() + '%';
+    scaleControlValue.setAttribute('value', scale.toString() + '%');
     var formattedScale = scale / MAX_SCALE_VALUE;
     imageUploadPopup.querySelector('.img-upload__preview').style.transform = 'scale(' + formattedScale.toString() + ')';
   };
